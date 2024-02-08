@@ -1,0 +1,77 @@
+{
+  "artifact": {
+    "IronExpress": {
+      "name": "IRON EXPRESS",
+      "description": "Immediately after you play <c=card>the leftmost/ rightmost card in your hand</c>, your cannon slides left/right 1. Immediately after you play <c=card>the middle card in your hand</c>, your cannon rotates and is replaced by an armored shield."
+    },
+    "IronExpressV2": {
+      "name": "SPIN TO WIN",
+      "description": "While in cannon mode, rotating gives you 1 <c=status>OVERDRIVE</c>. While in shield mode, <c=card>the middle card in your hand</c> costs 1 less."
+    },
+    "IronExpressMobius": {
+      "name": "MOBIUS TRACKS",
+      "description": "Attempting to slide the cannon off the ship now teleports it to the opposite side."
+    },
+    "Challenger": {
+      "name": "CHALLENGER",
+      "description": "Attack cards played from the <c=card>left side of your hand</c> fire from the left fist and push the enemy to the right. The opposite is true for the right fist. Attacks from a card in <c=card>the center of your hand</c> are fired by both."
+    },
+    "ChampionBelt": {
+      "name": "CHAMPION'S BELT",
+      "description": "If a fist would miss by 1 space, it hits the next part nearest to the center instead."
+    },
+    "HighScore": {
+      "name": "HIGH SCORE",
+      "description": "Hitting alternating attacks from the left and right fist gives you a stacking <c=status>HIGH SCORE</c> bonus, that resets when doing 2 attacks from the same fist in a row."
+    },
+    "Ouranos": {
+      "name": "OURANOS RAILGUN",
+      "description": "At the end of your turn, gain 1 <c=ffe93b>ELECTRIC CHARGE</c>.\n<c=downside>Each turn, any attack card played after the first one will do 0 damage.</c>"
+    },
+    "Ouranos_V2": {
+      "name": "OURANOS RAILGUN V2",
+      "description": "Replaces <c=artifact>OURANOS RAILGUN</c>.\nAt the end of your turn, gain 1 <c=ffe93b>ELECTRIC CHARGE</c>. Your attacks are stored in your cannon and are fired all at once on turn end."
+    },
+    "PowerSurge": {
+      "name": "POWER SURGE",
+      "description": "At the start of combat, gain 3 <c=ffe93b>ELECTRIC CHARGE</c>."
+    },
+    "LightningDrive": {
+      "name": "LIGHTNING DRIVE",
+      "description": ""
+    }
+  },
+  "ship": {
+    "Rail": {
+      "name": "Iron Express",
+      "description": "A clunky ship featuring a rail mounted cannon, also capable of acting as a shield by rotating on its axis."
+    },
+    "Fist": {
+      "name": "Challenger",
+      "description": "A young ship that dreams of becoming the greatest boxer of its timeline."
+    },
+    "Ouranos": {
+      "name": "Ouranos",
+      "description": "A nimble warship featuring a powerfull, slow shooting railgun."
+    },
+    "Asteroid": {
+      "name": "Asteroid",
+      "description": "This scrap ship made from asteroid has the ability to throw its parts at the opponent."
+    }
+  },
+  "status": {
+    "ElectricCharge": {
+      "name": "ELECTRIC CHARGE",
+      "description": "Add {0} damage to your next attack card.\n<c=downside>Decreases by 1 when hit.</c>"
+    },
+    "RailgunCharge": {
+      "name": "RAILGUN CHARGE",
+      "description": "Attacks have been loaded into the railgun, and will be release at turn end for {0} damages"
+    }
+  },
+  "card": {
+    "BasicCharge": {
+      "name": "Basic Charge"
+    }
+  }
+}

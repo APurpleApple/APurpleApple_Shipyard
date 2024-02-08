@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <RootNamespace>APurpleApple.Shipyard</RootNamespace>
+        <Version>1.0.0</Version>
+        <IsNickelMod>True</IsNickelMod>
+        <IncludedModProjectPaths>i18n;assets</IncludedModProjectPaths>
+        <TargetFramework>net8.0</TargetFramework>
+        <ModZipPath>$(MSBuildProjectDirectory)\.release\$(MSBuildProjectName)-$(Version).zip</ModZipPath>
+        <LangVersion>12.0</LangVersion>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <WarningsAsErrors>Nullable</WarningsAsErrors>
+        <CheckEolTargetFramework>false</CheckEolTargetFramework>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
+        <PackageReference Include="Nickel.ModBuildConfig" Version="0.4.0-prerelease1" />
+        <PackageReference Include="Nanoray.ExtractSingleFileApplicationResourceTask" Version="1.0.0" PrivateAssets="All" ExcludeAssets="runtime" />
+        <PackageReference Include="MakeTypesPublic" Version="1.0.3" PrivateAssets="All" ExcludeAssets="runtime" />
+        <PackageReference Include="EnumByNameSourceGenerator" Version="1.1.1" PrivateAssets="All" ExcludeAssets="runtime" />
+        <None Include="$(MSBuildProjectDirectory)\..\.editorconfig" Link=".editorconfig" />
+        <None Remove="$(MSBuildProjectDirectory)\.release\**" />
+    </ItemGroup>
+	<ItemGroup>
+		<Content Include="Sprites\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Cards\Asteroid\" />
+	  <Folder Include="Sprites\Artifacts\" />
+	  <Folder Include="Sprites\Cards\" />
+	  <Folder Include="Sprites\FX\" />
+	  <Folder Include="Sprites\Parts\" />
+	</ItemGroup>
+</Project>
