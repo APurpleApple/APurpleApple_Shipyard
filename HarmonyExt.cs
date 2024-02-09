@@ -78,6 +78,39 @@ public static class HarmonyExt
         }
     }
 
+    public static bool TryPatch(
+        this Harmony self,
+        Func<MethodBase?> original,
+        ILogger logger,
+        LogLevel problemLogLevel = LogLevel.Error,
+        LogLevel successLogLevel = LogLevel.Trace,
+        HarmonyMethod? prefix = null,
+        HarmonyMethod? postfix = null,
+        HarmonyMethod? transpiler = null,
+        HarmonyMethod? finalizer = null
+    )
+    {
+        var originalMethod = original();
+        if (originalMethod is null)
+        {
+            logger.Log(problemLogLevel, "Could not patch method - the mod may not work correctly.\nReason: Unknown method to patch.");
+            return false;
+        }
+
+        try
+        {
+
+            self.Patch(originalMethod, prefix, postfix, transpiler, finalizer);
+            logger.Log(successLogLevel, "Patched method {Method}.", originalMethod.FullDescription());
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.Log(problemLogLevel, "Could not patch method {Method} - the mod may not work correctly.\nReason: {Exception}", originalMethod, ex);
+            return false;
+        }
+    }
+
     public static (int patched, int total) TryPatchVirtual(
         this Harmony self,
         Func<MethodBase?> original,

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <RootNamespace>APurpleApple.Shipyard</RootNamespace>
-        <Version>1.0.0</Version>
+        <Version>1.5.0</Version>
         <IsNickelMod>True</IsNickelMod>
         <IncludedModProjectPaths>i18n;assets</IncludedModProjectPaths>
         <TargetFramework>net8.0</TargetFramework>
@@ -27,7 +27,6 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Cards\Asteroid\" />
 	  <Folder Include="Sprites\Artifacts\" />
 	  <Folder Include="Sprites\Cards\" />
 	  <Folder Include="Sprites\FX\" />

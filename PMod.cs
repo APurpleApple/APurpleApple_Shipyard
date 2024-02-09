@@ -12,6 +12,7 @@ using APurpleApple.Shipyard.Patches;
 using Shockah.Shared;
 using APurpleApple.Shipyard.Artifacts.Ouranos;
 using APurpleApple.Shipyard.Cards;
+using APurpleApple.Shipyard.Artifacts;
 
 namespace APurpleApple.Shipyard;
 
@@ -32,7 +33,11 @@ public sealed class PMod : SimpleMod
     public static Dictionary<string, IShipEntry> ships = new();
     public static Dictionary<string, IDeckEntry> decks = new();
     internal static IReadOnlyList<Type> Registered_Card_Types { get; } = [
-        typeof(CardOuranosSpark)
+        typeof(CardOuranosSpark),
+        typeof(CardAsteroidShot),
+        typeof(CardAsteroidBay),
+        typeof(CardAsteroidBlock),
+        typeof(CardAsteroidDodge),
     ];
 
     internal static IReadOnlyList<Type> Registered_Artifact_Types { get; } = [
@@ -42,7 +47,8 @@ public sealed class PMod : SimpleMod
         typeof(ArtifactChallenger),
         typeof(ArtifactChallengerChampion),
         typeof(ArtifactOuranosCannon),
-        typeof(ArtifactOuranosCannonV2)
+        typeof(ArtifactOuranosCannonV2),
+        typeof(ArtifactAsteroid)
         //typeof(ArtifactChallengerHighScore)
     ];
 
@@ -63,6 +69,10 @@ public sealed class PMod : SimpleMod
         typeof(ArtifactOuranosCannonV2)
     ];
 
+    internal static IReadOnlyList<Type> AsteroidExclusiveArtifacts { get; } = [
+        typeof(ArtifactAsteroid),
+    ];
+
     public void RegisterSprite(string key, string fileName, IPluginPackage<IModManifest> package)
     {
         sprites.Add(key, Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("Sprites/" + fileName)));
@@ -72,6 +82,8 @@ public sealed class PMod : SimpleMod
     {
         Harmony harmony = new("APurpleApple.Shipyard");
         harmony.PatchAll();
+
+        CustomTTGlossary.ApplyPatches(harmony);
 
         var postf = new HarmonyMethod(typeof(ElectricChargesPatches).GetMethod(nameof(ElectricChargesPatches.RemoveElectricCharge)));
         harmony.PatchVirtual(typeof(AAttack).GetMethod(nameof(AAttack.Begin)), Logger, postfix: postf);
@@ -118,6 +130,10 @@ public sealed class PMod : SimpleMod
         RegisterSprite("Asteroid_Engine", "Parts/asteroid_engine.png", package);
         RegisterSprite("Asteroid_Cockpit", "Parts/asteroid_cockpit.png", package);
         RegisterSprite("Asteroid_Chassis", "Parts/asteroid_chassis.png", package);
+        RegisterSprite("Asteroid_Scaffolding", "Parts/asteroid_scaffolding.png", package);
+        RegisterSprite("Asteroid_Artifact", "Artifacts/AsteroidArtifact.png", package);
+
+        RegisterSprite("ATossPart", "Icons/tossPart.png", package);
 
         parts.Add("Asteroid_Cannon", Helper.Content.Ships.RegisterPart("Asteroid_Cannon", new PartConfiguration()
         {
@@ -139,6 +155,12 @@ public sealed class PMod : SimpleMod
         {
             Sprite = sprites["Asteroid_Cockpit"].Sprite,
         }));
+        parts.Add("Asteroid_Scaffolding", Helper.Content.Ships.RegisterPart("Asteroid_Scaffolding", new PartConfiguration()
+        {
+            Sprite = sprites["Asteroid_Scaffolding"].Sprite,
+        }));
+
+        
 
         ships.Add("Asteroid", Helper.Content.Ships.RegisterShip("Asteroid", new ShipConfiguration()
         {
@@ -146,56 +168,62 @@ public sealed class PMod : SimpleMod
             {
                 ship = new Ship()
                 {
-                    hull = 7,
-                    hullMax = 7,
-                    shieldMaxBase = 4,
+                    hull = 5,
+                    hullMax = 5,
+                    shieldMaxBase = 3,
                     parts =
                     {
                         new Part()
                         {
                             type = PType.cockpit,
                             skin = parts["Asteroid_Cockpit"].UniqueName,
-                            damageModifier = PDamMod.none
+                            damageModifier = PDamMod.none,
+                            key = "AsteroidCockpit"
                         },
                         new Part()
                         {
                             type = PType.cannon,
                             skin = parts["Asteroid_Cannon"].UniqueName,
-                            damageModifier = PDamMod.none
+                            damageModifier = PDamMod.none,
+                            key = "AsteroidCannon"
                         },
                         new Part()
                         {
                             type = PType.wing,
                             skin = parts["Asteroid_Engine"].UniqueName,
-                            damageModifier = PDamMod.none,
+                            damageModifier = PDamMod.weak,
+                            key = "AsteroidEngine",
                         },
                         new Part()
                         {
                             type = PType.comms,
                             skin = parts["Asteroid_Comms"].UniqueName,
-                            damageModifier = PDamMod.none
+                            damageModifier = PDamMod.weak,
+                            key = "AsteroidComms"
                         },
                         new Part()
                         {
                             type = PType.missiles,
                             skin = parts["Asteroid_Missile"].UniqueName,
-                            damageModifier = PDamMod.none
+                            damageModifier = PDamMod.none,
+                            key = "AsteroidMissile"
                         }
                     }
                 },
                 cards =
                 {
-                    new CannonColorless(),
-                    new CannonColorless(),
-                    new DodgeColorless(),
-                    new BasicShieldColorless(),
+                    new CardAsteroidShot(),
+                    new CardAsteroidBlock(),
+                    new CardAsteroidBay(),
+                    new CardAsteroidDodge(),
                 },
                 artifacts =
                 {
+                    new ArtifactAsteroid(),
                     new ShieldPrep()
                 }
             },
-
+            ExclusiveArtifactTypes = AsteroidExclusiveArtifacts.ToFrozenSet(),
             UnderChassisSprite = sprites["Asteroid_Chassis"].Sprite,
 
             Name = this.AnyLocalizations.Bind(["ship", "Asteroid", "name"]).Localize,

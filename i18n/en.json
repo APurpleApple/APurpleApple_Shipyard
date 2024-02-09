@@ -39,6 +39,16 @@
     "LightningDrive": {
       "name": "LIGHTNING DRIVE",
       "description": ""
+    },
+    "Asteroid": {
+      "name": "ASTEROID HULL",
+      "description": "This ship's starting cards allows ejection of most of its parts.\n<c=downside>While a part is ejected, the relevant feature becomes unavailable. (Comms prevents from gaining shield, Engine prevents from moving)</c>"
+    }
+  },
+  "action": {
+    "TossPart": {
+      "name":"EJECT PART",
+      "description": "Eject the hilighted part until the next turn for <c=damage>1</c> damage."
     }
   },
   "ship": {
@@ -55,8 +65,8 @@
       "description": "A nimble warship featuring a powerfull, slow shooting railgun."
     },
     "Asteroid": {
-      "name": "Asteroid",
-      "description": "This scrap ship made from asteroid has the ability to throw its parts at the opponent."
+      "name": "Shooting Star",
+      "description": "A ship scrapped together from wrecks and asteroid parts."
     }
   },
   "status": {
@@ -72,6 +82,18 @@
   "card": {
     "BasicCharge": {
       "name": "Basic Charge"
+    },
+    "AsteroidShot": {
+      "name": "Basic Shot"
+    },
+    "AsteroidShield": {
+      "name": "Basic Block"
+    },
+    "AsteroidBay": {
+      "name": "Asteroid Shot"
+    },
+    "AsteroidDodge": {
+      "name": "Basic Dodge"
     }
   }
 }
