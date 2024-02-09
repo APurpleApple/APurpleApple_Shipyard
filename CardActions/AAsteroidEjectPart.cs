@@ -15,8 +15,10 @@ namespace APurpleApple.Shipyard.CardActions
     internal class AAsteroidEjectPart : CardAction, IAOversized
     {
         public string partKey = "";
+
+        public bool far = false;
         public int offset => -4;
-        public Icon icon => new Icon(PMod.sprites["ATossPart"].Sprite, null, Colors.white);
+        public Icon icon => new Icon(PMod.sprites[far ? "ATossPartFar" : "ATossPart"].Sprite, null, Colors.white);
 
         public override void Begin(G g, State s, Combat c)
         {
@@ -46,6 +48,7 @@ namespace APurpleApple.Shipyard.CardActions
             if (artifact == null) return;
             
             artifact.ejectedParts.Add(ejectedPart);
+            artifact.turnBeforeComeback.Add(far ? 2 : 1);
             Ship ship = c.otherShip;
             int damage = 1;
             RaycastResult raycastResult = CombatUtils.RaycastFromShipLocal(s, c, localX, false);
@@ -135,7 +138,7 @@ namespace APurpleApple.Shipyard.CardActions
                 CustomTTGlossary.GlossaryType.action,
                 () => PMod.sprites["ATossPart"].Sprite,
                 () => PMod.Instance.Localizations.Localize(["action", "TossPart", "name"]),
-                () => PMod.Instance.Localizations.Localize(["action", "TossPart", "description"]),
+                () => PMod.Instance.Localizations.Localize(["action", "TossPart", far ? "description2" : "description"]),
                 key: typeof(AAsteroidEjectPart).FullName ?? typeof(AAsteroidEjectPart).Name
                 ));
             return list;

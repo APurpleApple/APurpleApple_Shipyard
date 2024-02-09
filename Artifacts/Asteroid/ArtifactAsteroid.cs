@@ -16,6 +16,7 @@ namespace APurpleApple.Shipyard.Artifacts
         public int fistMovement = 0;
 
         public List<Part> ejectedParts = new List<Part>();
+        public List<int> turnBeforeComeback = new List<int>();
 
         public static void Register(IModHelper helper)
         {

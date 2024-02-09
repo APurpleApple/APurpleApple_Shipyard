@@ -32,9 +32,9 @@ namespace APurpleApple.Shipyard.Cards
         {
             List<CardAction> actions = new List<CardAction>();
 
-            actions.Add(new AStatus() { status = Status.evade, statusAmount = 1, targetPlayer =true, disabled = flipped});
+            actions.Add(new AStatus() { status = Status.evade, statusAmount = upgrade == Upgrade.B ? 2 : 1, targetPlayer =true, disabled = flipped});
             actions.Add(new ADummyAction());
-            actions.Add(new AAsteroidEjectPart() {disabled = !flipped, partKey = "AsteroidEngine" });
+            actions.Add(new AAsteroidEjectPart() {disabled = !flipped, partKey = "AsteroidEngine", far = upgrade == Upgrade.A });
 
             return actions;
         }

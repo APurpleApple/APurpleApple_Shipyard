@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <RootNamespace>APurpleApple.Shipyard</RootNamespace>
-        <Version>1.5.0</Version>
+        <Version>1.5.1</Version>
         <IsNickelMod>True</IsNickelMod>
         <IncludedModProjectPaths>i18n;assets</IncludedModProjectPaths>
         <TargetFramework>net8.0</TargetFramework>

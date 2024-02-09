@@ -134,6 +134,7 @@ public sealed class PMod : SimpleMod
         RegisterSprite("Asteroid_Artifact", "Artifacts/AsteroidArtifact.png", package);
 
         RegisterSprite("ATossPart", "Icons/tossPart.png", package);
+        RegisterSprite("ATossPartFar", "Icons/tossPartFar.png", package);
 
         parts.Add("Asteroid_Cannon", Helper.Content.Ships.RegisterPart("Asteroid_Cannon", new PartConfiguration()
         {

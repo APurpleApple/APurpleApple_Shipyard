@@ -21,14 +21,20 @@ namespace APurpleApple.Shipyard.CardActions
             {
                 if (s.ship.parts[i].key == "AsteroidScaffolding" && artifact.ejectedParts.Count > index)
                 {
-                    c.Queue(new AEjectedPartReturn() { part = artifact.ejectedParts[index], index = i, timer = 0 });
-                    c.fx.Add(new PartEjectionReturn() { part = artifact.ejectedParts[index], worldX = (i + s.ship.x) * 16 });
-                    index++;
+                    artifact.turnBeforeComeback[index]--;
+                    if (artifact.turnBeforeComeback[index] == 0)
+                    {
+                        c.Queue(new AEjectedPartReturn() { part = artifact.ejectedParts[index], index = i, timer = 0 });
+                        c.fx.Add(new PartEjectionReturn() { part = artifact.ejectedParts[index], worldX = (i + s.ship.x) * 16 });
+                        artifact.turnBeforeComeback.RemoveAt(index);
+                        artifact.ejectedParts.RemoveAt(index);
+                    }
+                    else
+                    {
+                        index++;
+                    }
                 }
             }
-
-
-            artifact.ejectedParts.Clear();
         }
     }
 }
