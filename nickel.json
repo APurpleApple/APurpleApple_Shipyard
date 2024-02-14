@@ -1,6 +1,6 @@
 {
   "UniqueName": "APurpleApple.Shipyard",
-  "Version": "1.5.1",
+  "Version": "1.6.0",
   "RequiredApiVersion": "0.1.0",
   "EntryPointAssembly": "APurpleApple_Shipyard.dll"
 }
