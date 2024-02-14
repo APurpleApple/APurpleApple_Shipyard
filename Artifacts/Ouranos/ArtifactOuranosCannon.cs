@@ -21,6 +21,7 @@ internal sealed class ArtifactOuranosCannon : Artifact, IModArtifact, IOuranosCa
             {
                 owner = Deck.colorless,
                 unremovable = true,
+                pools = [ArtifactPool.EventOnly]
             },
             Sprite = PMod.sprites["Ouranos_Artifact_Cannon"].Sprite,
             Name = PMod.Instance.AnyLocalizations.Bind(["artifact", "Ouranos", "name"]).Localize,

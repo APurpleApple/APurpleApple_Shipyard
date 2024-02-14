@@ -71,7 +71,10 @@ namespace APurpleApple.Shipyard.Artifacts.Challenger
         {
             if (fistMovement != 0)
             {
-                if (combat.currentCardAction != null) combat.currentCardAction.timer = 0.0;
+                if (combat.currentCardAction == null) return;
+                if (combat.currentCardAction is not AAttack attack) return;
+                if (attack.fromDroneX.HasValue) return;
+                attack.timer = 0.0;
                 combat.QueueImmediate(new AMove() { dir = fistMovement, targetPlayer = false });
                 for (int i = 0; i < combat.cardActions.Count; i++)
                 {

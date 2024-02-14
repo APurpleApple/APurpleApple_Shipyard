@@ -44,7 +44,7 @@ namespace APurpleApple.Shipyard.Cards
             CardData data = new CardData();
             data.floppable = true;
             data.cost = 1;
-            data.art = flipped ? Spr.cards_Adaptability_Bottom : Spr.cards_Adaptability_Top;
+            data.art = flipped ? SSpr.cards_Adaptability_Bottom : SSpr.cards_Adaptability_Top;
             return data;
         }
     }

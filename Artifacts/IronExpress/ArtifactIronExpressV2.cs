@@ -35,7 +35,7 @@ namespace APurpleApple.Shipyard.Artifacts.IronExpress
         {
             if (!cannon.isCannon)
             {
-                c.QueueImmediate(new AStatus() { targetPlayer = true, status = Status.overdrive, statusAmount = 1, artifactPulse = this.Key() });
+                c.QueueImmediate(new AStatus() { targetPlayer = true, status = SStatus.overdrive, statusAmount = 1, artifactPulse = this.Key() });
             }
         }
 

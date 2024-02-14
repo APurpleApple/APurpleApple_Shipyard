@@ -32,7 +32,7 @@ namespace APurpleApple.Shipyard.Cards
         {
             List<CardAction> actions = new List<CardAction>();
 
-            actions.Add(new AStatus() { status = Status.shield, statusAmount = upgrade == Upgrade.B ? 2 : 1, targetPlayer =true, disabled = flipped});
+            actions.Add(new AStatus() { status = SStatus.shield, statusAmount = upgrade == Upgrade.B ? 2 : 1, targetPlayer =true, disabled = flipped});
             actions.Add(new ADummyAction());
             actions.Add(new AAsteroidEjectPart() {disabled = !flipped, partKey = "AsteroidComms", far = upgrade == Upgrade.A });
 
@@ -44,7 +44,7 @@ namespace APurpleApple.Shipyard.Cards
             CardData data = new CardData();
             data.floppable = true;
             data.cost = 1;
-            data.art = flipped ? Spr.cards_Adaptability_Bottom : Spr.cards_Adaptability_Top;
+            data.art = flipped ? SSpr.cards_Adaptability_Bottom : SSpr.cards_Adaptability_Top;
             return data;
         }
     }

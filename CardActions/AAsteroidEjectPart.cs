@@ -68,19 +68,19 @@ namespace APurpleApple.Shipyard.CardActions
                     });
                 }
 
-                if ((ship.Get(Status.payback) > 0 || ship.Get(Status.tempPayback) > 0))
+                if ((ship.Get(SStatus.payback) > 0 || ship.Get(SStatus.tempPayback) > 0))
                 {
                     c.QueueImmediate(new AAttack
                     {
                         paybackCounter = 1,
-                        damage = Card.GetActualDamage(s, ship.Get(Status.payback) + ship.Get(Status.tempPayback), true),
+                        damage = Card.GetActualDamage(s, ship.Get(SStatus.payback) + ship.Get(SStatus.tempPayback), true),
                         targetPlayer = true,
                         fast = true,
                         storyFromPayback = true
                     });
                 }
 
-                if (ship.Get(Status.reflexiveCoating) >= 1)
+                if (ship.Get(SStatus.reflexiveCoating) >= 1)
                 {
                     c.QueueImmediate(new AArmor
                     {

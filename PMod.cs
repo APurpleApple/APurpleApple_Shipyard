@@ -13,6 +13,9 @@ using Shockah.Shared;
 using APurpleApple.Shipyard.Artifacts.Ouranos;
 using APurpleApple.Shipyard.Cards;
 using APurpleApple.Shipyard.Artifacts;
+using Nanoray.EnumByNameSourceGenerator;
+using APurpleApple.Shipyard.Artifacts.Squadron;
+
 
 namespace APurpleApple.Shipyard;
 
@@ -48,7 +51,8 @@ public sealed class PMod : SimpleMod
         typeof(ArtifactChallengerChampion),
         typeof(ArtifactOuranosCannon),
         typeof(ArtifactOuranosCannonV2),
-        typeof(ArtifactAsteroid)
+        typeof(ArtifactAsteroid),
+        typeof(ArtifactSquadron)
         //typeof(ArtifactChallengerHighScore)
     ];
 
@@ -73,6 +77,11 @@ public sealed class PMod : SimpleMod
         typeof(ArtifactAsteroid),
     ];
 
+    internal static IReadOnlyList<Type> SquadronExclusiveArtifacts { get; } = [
+        typeof(ArtifactSquadron),
+    ];
+
+
     public void RegisterSprite(string key, string fileName, IPluginPackage<IModManifest> package)
     {
         sprites.Add(key, Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("Sprites/" + fileName)));
@@ -94,6 +103,15 @@ public sealed class PMod : SimpleMod
 
         pref = new HarmonyMethod(typeof(ChallengerPatches).GetMethod(nameof(ChallengerPatches.ChampionBelt)));
         harmony.PatchVirtual(typeof(AAttack).GetMethod(nameof(AAttack.Begin)), Logger, prefix: pref);
+
+        pref = new HarmonyMethod(typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.ActivateBays)));
+        harmony.PatchVirtual(typeof(ASpawn).GetMethod(nameof(ASpawn.Begin)), Logger, prefix: pref);
+
+        pref = new HarmonyMethod(typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.ActivateCannons)));
+        harmony.PatchVirtual(typeof(AAttack).GetMethod(nameof(AAttack.Begin)), Logger, prefix: pref);
+
+        postf = new HarmonyMethod(typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.DetectCannons)));
+        harmony.PatchVirtual(typeof(AAttack).GetMethod(nameof(AAttack.DoWeHaveCannonsThough)), Logger, postfix: postf);
     }
 
     public PMod(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
@@ -114,12 +132,89 @@ public sealed class PMod : SimpleMod
         RegisterIronExpress(package);
         RegisterOuranos(package);
         RegisterAsteroidShip(package);
+        RegisterSquadronShip(package);
 
         foreach (var cardType in Registered_Card_Types)
             AccessTools.DeclaredMethod(cardType, nameof(IModCard.Register))?.Invoke(null, [helper]);
 
         foreach (var artifactType in Registered_Artifact_Types)
             AccessTools.DeclaredMethod(artifactType, nameof(IModArtifact.Register))?.Invoke(null, [helper]);
+    }
+
+    private void RegisterSquadronShip(IPluginPackage<IModManifest> package)
+    {
+        RegisterSprite("Squadron_Unit", "Parts/squadron_fighter.png", package);
+        RegisterSprite("Squadron_Unit_Broken", "Parts/squadron_fighter_broken.png", package);
+        RegisterSprite("Squadron_Color_Decal", "Parts/squadron_color_decal.png", package);
+        RegisterSprite("Squadron_MoveButton", "UI/squadron_move_right.png", package);
+        RegisterSprite("Squadron_MoveButtonOn", "UI/squadron_move_right_on.png", package);
+        RegisterSprite("Squadron_Crown", "Icons/crown.png", package);
+        RegisterSprite("Squadron_Artifact", "Artifacts/Squadron.png", package);
+
+        ships.Add("Squadron", Helper.Content.Ships.RegisterShip("Squadron", new ShipConfiguration()
+        {
+            Ship = new StarterShip()
+            {
+                ship = new Ship()
+                {
+                    hull = 6,
+                    hullMax = 6,
+                    shieldMaxBase = 3,
+                    parts =
+                    {
+                        new PartSquadronUnit()
+                        {
+                            type = PType.special,
+                            skin = "",
+                            damageModifier = PDamMod.none,
+                            key = "SquadronUnit"
+                        },
+                        new Part()
+                        {
+                            type = PType.empty,
+                            skin = "",
+                        },
+                        new PartSquadronUnit()
+                        {
+                            type = PType.special,
+                            skin = "",
+                            damageModifier = PDamMod.none,
+                            hasCrown = true,
+                            key = "SquadronUnit"
+                        },
+                        new Part()
+                        {
+                            type = PType.empty,
+                            skin = "",
+                        },
+                        new PartSquadronUnit()
+                        {
+                            type = PType.special,
+                            skin = "",
+                            damageModifier = PDamMod.none,
+                            key = "SquadronUnit"
+                        }
+                    }
+                },
+                cards =
+                {
+                    new CannonColorless(),
+                    new CannonColorless(),
+                    new DodgeColorless(),
+                    new BasicShieldColorless(),
+                },
+                artifacts =
+                {
+                    new ShieldPrep(),
+                    new ArtifactSquadron()
+                }
+            },
+            UnderChassisSprite = SSpr.parts_none,
+            ExclusiveArtifactTypes = SquadronExclusiveArtifacts.ToFrozenSet(),
+
+            Name = this.AnyLocalizations.Bind(["ship", "Squadron", "name"]).Localize,
+            Description = this.AnyLocalizations.Bind(["ship", "Squadron", "description"]).Localize
+        }));
     }
 
     private void RegisterAsteroidShip(IPluginPackage<IModManifest> package)
@@ -493,7 +588,7 @@ public sealed class PMod : SimpleMod
 
         parts.Add("Rail_Empty", Helper.Content.Ships.RegisterPart("Rail_Empty", new PartConfiguration()
         {
-            Sprite = Spr.parts_scaffolding
+            Sprite = SSpr.parts_scaffolding
         }));
 
         ships.Add("IronExpress", Helper.Content.Ships.RegisterShip("IronExpress", new ShipConfiguration()
@@ -560,7 +655,7 @@ public sealed class PMod : SimpleMod
                 }
             },
             ExclusiveArtifactTypes = IronExpressExclusiveArtifacts.ToFrozenSet(),
-            UnderChassisSprite = Spr.parts_none,
+            UnderChassisSprite = SSpr.parts_none,
 
             Name = this.AnyLocalizations.Bind(["ship", "Rail", "name"]).Localize,
             Description = this.AnyLocalizations.Bind(["ship", "Rail", "description"]).Localize

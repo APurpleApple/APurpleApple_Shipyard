@@ -49,17 +49,17 @@ namespace APurpleApple.Shipyard.Cards
             data.floppable = true;
 
             data.cost = 1;
-
+           
             switch (upgrade)
             {
                 case Upgrade.None:
-                    data.art = flipped ? Spr.cards_Adaptability_Bottom : Spr.cards_Adaptability_Top;
+                    data.art = flipped ? SSpr.cards_Adaptability_Bottom : SSpr.cards_Adaptability_Top;
                     break;
                 case Upgrade.A:
-                    data.art = flipped ? Spr.cards_Adaptability_Bottom : Spr.cards_Adaptability_Top;
+                    data.art = flipped ? SSpr.cards_Adaptability_Bottom : SSpr.cards_Adaptability_Top;
                     break;
                 case Upgrade.B:
-                    data.art = flipped ? Spr.cards_MiningDrill_Bottom : Spr.cards_MiningDrill_Top;
+                    data.art = flipped ? SSpr.cards_MiningDrill_Bottom : SSpr.cards_MiningDrill_Top;
                     break;
             }
             
