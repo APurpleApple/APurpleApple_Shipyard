@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using APurpleApple.Shipyard.Artifacts.Ouranos;
 using FMOD;
+using FMOD.Studio;
 using HarmonyLib;
 using Nickel;
 
@@ -27,7 +28,12 @@ namespace APurpleApple.Shipyard.Patches
                 {
                     if (__instance.damage > 0)
                     {
-                        EffectSpawnerExtension.RailgunBeam(c, s.ship.parts.FindIndex((Part p) => p.key == "Ouranos_Cannon") + s.ship.x, __instance.damage, new Color("ff8866"));
+                        int? x = __instance.GetFromX(s, c);
+
+                        if (x.HasValue)
+                        {
+                            EffectSpawnerExtension.RailgunBeam(c, s.ship.x + x.Value, __instance.damage, new Color("ff8866"));
+                        }
                     }
                 }
             }
