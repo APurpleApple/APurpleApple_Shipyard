@@ -32,6 +32,19 @@ namespace APurpleApple.Shipyard.Artifacts.Squadron
             });
         }
 
+        public override void OnReceiveArtifact(State state)
+        {
+            int i = 0;
+            foreach (var item in state.ship.parts)
+            {
+                if (item is PartSquadronUnit unit)
+                {
+                    unit.pilot = state.characters[i].deckType;
+                    i++;
+                }
+            }
+        }
+
         public override void OnCombatEnd(State state)
         {
             List<PartSquadronUnit> units = new List<PartSquadronUnit>();

@@ -9,5 +9,6 @@ namespace APurpleApple.Shipyard.Parts
     public class PartChallengerFist : Part
     {
         public int xTarget = 0;
+        public int yTarget = 0;
     }
 }

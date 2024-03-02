@@ -20,9 +20,13 @@
       "name": "CHAMPION'S BELT",
       "description": "If a fist would miss by 1 space, it hits the next part nearest to the center instead."
     },
+    "Sweatband": {
+      "name": "SWEATBAND",
+      "description": "After taking hull damage, gain 1 <c=status>AUTODODGE RIGHT</c>"
+    },
     "HighScore": {
       "name": "HIGH SCORE",
-      "description": "Hitting alternating attacks from the left and right fist gives you a stacking <c=status>HIGH SCORE</c> bonus, that resets when doing 2 attacks from the same fist in a row."
+      "description": "Playing alternating cards from the left and right of your hand gives you a stacking <c=status>HIGH SCORE</c> bonus, that resets when playing 2 cards from the same side in a row."
     },
     "Ouranos": {
       "name": "OURANOS RAILGUN",
@@ -34,11 +38,11 @@
     },
     "PowerSurge": {
       "name": "POWER SURGE",
-      "description": "At the start of combat, gain 3 <c=ffe93b>ELECTRIC CHARGE</c>."
+      "description": "At the start of combat, gain 2 <c=ffe93b>ELECTRIC CHARGE</c>."
     },
     "LightningDrive": {
       "name": "LIGHTNING DRIVE",
-      "description": ""
+      "description": "At turn start, if you've got 2 or more <c=ffe93b>ELECTRIC CHARGE</c>, gain 1 <c=status>EVADE</c>."
     },
     "Asteroid": {
       "name": "ASTEROID HULL",
@@ -47,6 +51,10 @@
     "Squadron": {
       "name": "SQUADRON",
       "description": "Squad members can be moved individually.\nCards are only played by the relevant pilot, or by the <c=ffe93b>squad leader</c> if the pilot isn't present.\nThe <c=ffe93b>squad leader</c> is the last pilot to have moved or played a card. \n<c=downside>When a pilot takes damage, they go missing.</c>"
+    },
+    "Squadron4th": {
+      "name": "THE MORE THE MERRIER",
+      "description": "Gain 1 <c=status>ENERGY</c> every turn.\nOn pickup, adds a random 4th pilot to the squadron, along with their starting cards and artifacts."
     }
   },
   "action": {

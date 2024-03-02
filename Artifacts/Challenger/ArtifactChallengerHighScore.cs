@@ -14,8 +14,6 @@ namespace APurpleApple.Shipyard.Artifacts.Challenger
     {
         public int highscore = 0;
         public bool? shouldBeRight;
-        public bool isMiddle = false;
-        public bool currentIsRight = false;
 
         public static void Register(IModHelper helper)
         {
@@ -44,40 +42,36 @@ namespace APurpleApple.Shipyard.Artifacts.Challenger
             shouldBeRight = null;
         }
 
-        public override void OnPlayerAttack(State state, Combat combat)
+        public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
         {
-            if (shouldBeRight == null)
+            if (!(handCount % 2 == 1 && handPosition == handCount / 2))
             {
-                shouldBeRight = !currentIsRight;
-            }
-            else if(!isMiddle)
-            {
+                bool currentIsRight = !(handPosition < handCount / 2);
+
+                if (!shouldBeRight.HasValue)
+                {
+                    shouldBeRight = currentIsRight;
+                }
+
                 if (currentIsRight == shouldBeRight)
                 {
-                    highscore++;
                     shouldBeRight = !shouldBeRight;
+                    highscore++;
+                    this.Pulse();
                 }
                 else
                 {
-                    Pulse();
-                    highscore = 0;
                     shouldBeRight = null;
+                    highscore = 0;
+                    Pulse();
                 }
-            }
-            else
-            {
-                highscore++;
             }
         }
 
-        public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
-        {
-            isMiddle = handCount % 2 == 1 && handPosition == handCount / 2;
 
-            if (!isMiddle)
-            {
-                currentIsRight = !(handPosition < handCount / 2);
-            }
+        public override Spr GetSprite()
+        {
+            return shouldBeRight.HasValue ? shouldBeRight.Value ? PMod.sprites["Artifact_HighScoreRight"].Sprite : PMod.sprites["Artifact_HighScoreLeft"].Sprite : PMod.sprites["Artifact_HighScore"].Sprite;
         }
     }
 }

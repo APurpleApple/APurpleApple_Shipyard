@@ -14,8 +14,6 @@ namespace APurpleApple.Shipyard.Patches
     [HarmonyPatch]
     internal static class SquadronPatches
     {
-        public static SquadronController controller = new SquadronController();
-
         [HarmonyPatch(typeof(Ship), nameof(Ship.DrawTopLayer)), HarmonyPostfix]
         public static void DrawStuff(Ship __instance, G __0, Vec __1, Vec __2)
         {
@@ -182,7 +180,7 @@ namespace APurpleApple.Shipyard.Patches
                     UIKey uIKey = new UIKey(SUK.btn_move_left, j);
                     Rect rect = new Rect(x - 6, 111.0 + yOffset, 8.0, 11.0);
                     UIKey key = uIKey;
-                    OnMouseDown onMouseDown = controller;
+                    OnMouseDown onMouseDown = c ;
                     bool showAsPressed = !c.eyeballPeek && Input.GetGpHeld(Btn.TriggerL);
                     SharedArt.ButtonResult buttonResult = SharedArt.ButtonSprite(g, rect, key, PMod.sprites["Squadron_MoveButton"].Sprite, PMod.sprites["Squadron_MoveButtonOn"].Sprite, null, null, inactive: false, flipX: true, flipY: false, onMouseDown, autoFocus: false, noHover: false, showAsPressed, gamepadUntargetable: true);
                     if (buttonResult.isHover)
@@ -196,7 +194,7 @@ namespace APurpleApple.Shipyard.Patches
                     UIKey uIKey = new UIKey(SUK.btn_move_right, j);
                     Rect rect = new Rect(x + 13, 111.0 + yOffset, 8.0, 11.0);
                     UIKey key = uIKey;
-                    OnMouseDown onMouseDown = controller;
+                    OnMouseDown onMouseDown = c;
                     bool showAsPressed = !c.eyeballPeek && Input.GetGpHeld(Btn.TriggerR);
                     SharedArt.ButtonResult buttonResult2 = SharedArt.ButtonSprite(g, rect, key, PMod.sprites["Squadron_MoveButton"].Sprite, PMod.sprites["Squadron_MoveButtonOn"].Sprite, null, null, inactive: false, flipX: false, flipY: false, onMouseDown, autoFocus: false, noHover: false, showAsPressed, gamepadUntargetable: true);
                     if (buttonResult2.isHover)
@@ -205,6 +203,103 @@ namespace APurpleApple.Shipyard.Patches
                     }
                 }
             }
+        }
+
+        [HarmonyPatch(typeof(StoryNode), nameof(StoryNode.Filter)), HarmonyPostfix]
+        public static void FilterOutShipModEvent(string key, State s, ref bool __result)
+        {
+            if (__result == false || s.ship.key != PMod.ships["Squadron"].UniqueName) return;
+            if (key == "AddScaffold"){
+                __result = false;
+                return; }
+            if (key == "ReorganizeShip") { 
+                __result = false;
+                return; }
+        }
+
+        [HarmonyPatch(typeof(Combat), nameof(Combat.DoEvade)), HarmonyPrefix]
+        public static void SetLeaderOnMove(G g)
+        {
+            if (g.state.ship.key != PMod.ships["Squadron"].UniqueName) return;
+            if (g.hoverKey == UK.btn_move_left || g.hoverKey == UK.btn_move_right)
+            {
+                int j = 0;
+                Ship ship = g.state.ship;
+                for (int i = 0; i < ship.parts.Count; i++)
+                {
+                    if (g.state.ship.parts[i] is not PartSquadronUnit unit) continue;
+                    j++;
+                    unit.hasCrown = j == g.hoverKey.Value.v;
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(AAttack), nameof(AAttack.ApplyAutododge)), HarmonyPrefix]
+        public static bool AutododgeFix(AAttack __instance, Combat c, Ship target, RaycastResult ray, ref bool __result)
+        {
+            if (target.key != PMod.ships["Squadron"].UniqueName) return true;
+
+            if (ray.hitShip && !__instance.isBeam)
+            {
+                if (target.Get(Status.autododgeRight) > 0)
+                {
+                    target.Add(Status.autododgeRight, -1);
+                    PartSquadronUnit? hitPart = target.GetPartAtWorldX(ray.worldX) as PartSquadronUnit;
+
+                    if (hitPart != null)
+                    {
+                        foreach (PartSquadronUnit part in target.parts.Where((p) => p is PartSquadronUnit))
+                        {
+                            part.hasCrown = false;
+                        }
+                        hitPart.hasCrown = true;
+
+                        c.QueueImmediate(new List<CardAction>
+                        {
+                            new AMove
+                            {
+                                targetPlayer = __instance.targetPlayer,
+                                dir = 1
+                            },
+                            __instance
+                        });
+                        __instance.timer = 0.0;
+                        __result = true;
+                        return false;
+                    }
+                    
+                }
+
+                if (target.Get(Status.autododgeLeft) > 0)
+                {
+                    target.Add(Status.autododgeLeft, -1);
+                    PartSquadronUnit? hitPart = target.GetPartAtWorldX(ray.worldX) as PartSquadronUnit;
+
+                    if (hitPart != null)
+                    {
+                        foreach (PartSquadronUnit part in target.parts.Where((p) => p is PartSquadronUnit))
+                        {
+                            part.hasCrown = false;
+                        }
+                        hitPart.hasCrown = true;
+
+                        c.QueueImmediate(new List<CardAction>
+                        {
+                            new AMove
+                            {
+                                targetPlayer = __instance.targetPlayer,
+                                dir = -1
+                            },
+                            __instance
+                        });
+                        __instance.timer = 0.0;
+                        __result = true;
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         [HarmonyPatch(typeof(AMove), nameof(AMove.Begin)), HarmonyPostfix]

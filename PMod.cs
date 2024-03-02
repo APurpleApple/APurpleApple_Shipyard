@@ -49,11 +49,15 @@ public sealed class PMod : SimpleMod
         typeof(ArtifactIronExpressMobius),
         typeof(ArtifactChallenger),
         typeof(ArtifactChallengerChampion),
+        typeof(ArtifactChallengerSweatband),
         typeof(ArtifactOuranosCannon),
         typeof(ArtifactOuranosCannonV2),
+        typeof(ArtifactOuranosSurge),
+        typeof(ArtifactOuranosLightningDrive),
         typeof(ArtifactAsteroid),
-        typeof(ArtifactSquadron)
-        //typeof(ArtifactChallengerHighScore)
+        typeof(ArtifactSquadron),
+        typeof(ArtifactSquadronPlus),
+        //typeof(ArtifactChallengerHighScore),
     ];
 
     internal static IReadOnlyList<Type> IronExpressExclusiveArtifacts { get; } = [
@@ -64,13 +68,16 @@ public sealed class PMod : SimpleMod
 
     internal static IReadOnlyList<Type> ChallengerExclusiveArtifacts { get; } = [
         typeof(ArtifactChallenger),
-        typeof(ArtifactChallengerChampion)
-        // typeof(ArtifactChallengerHighScore)
+        typeof(ArtifactChallengerChampion),
+        typeof(ArtifactChallengerSweatband),
+        //typeof(ArtifactChallengerHighScore),
     ];
 
     internal static IReadOnlyList<Type> OuranosExclusiveArtifacts { get; } = [
         typeof(ArtifactOuranosCannon),
-        typeof(ArtifactOuranosCannonV2)
+        typeof(ArtifactOuranosCannonV2),
+        typeof(ArtifactOuranosLightningDrive),
+        typeof(ArtifactOuranosSurge),
     ];
 
     internal static IReadOnlyList<Type> AsteroidExclusiveArtifacts { get; } = [
@@ -79,6 +86,7 @@ public sealed class PMod : SimpleMod
 
     internal static IReadOnlyList<Type> SquadronExclusiveArtifacts { get; } = [
         typeof(ArtifactSquadron),
+        typeof(ArtifactSquadronPlus),
     ];
 
 
@@ -143,6 +151,7 @@ public sealed class PMod : SimpleMod
 
     private void RegisterSquadronShip(IPluginPackage<IModManifest> package)
     {
+        
         RegisterSprite("Squadron_Unit", "Parts/squadron_fighter.png", package);
         RegisterSprite("Squadron_Unit_Broken", "Parts/squadron_fighter_broken.png", package);
         RegisterSprite("Squadron_Color_Decal", "Parts/squadron_color_decal.png", package);
@@ -150,6 +159,7 @@ public sealed class PMod : SimpleMod
         RegisterSprite("Squadron_MoveButtonOn", "UI/squadron_move_right_on.png", package);
         RegisterSprite("Squadron_Crown", "Icons/crown.png", package);
         RegisterSprite("Squadron_Artifact", "Artifacts/Squadron.png", package);
+        RegisterSprite("Squadron_ArtifactPlus", "Artifacts/Squadron4th.png", package);
 
         ships.Add("Squadron", Helper.Content.Ships.RegisterShip("Squadron", new ShipConfiguration()
         {
@@ -264,8 +274,8 @@ public sealed class PMod : SimpleMod
             {
                 ship = new Ship()
                 {
-                    hull = 5,
-                    hullMax = 5,
+                    hull = 6,
+                    hullMax = 6,
                     shieldMaxBase = 3,
                     parts =
                     {
@@ -332,6 +342,8 @@ public sealed class PMod : SimpleMod
         RegisterSprite("Ouranos_Artifact_Cannon", "Artifacts/Ouranos.png", package);
         RegisterSprite("Ouranos_Artifact_Cannon_V2", "Artifacts/OuranosV2.png", package);
         RegisterSprite("Ouranos_Artifact_Cannon_Off", "Artifacts/OuranosOff.png", package);
+        RegisterSprite("Ouranos_Artifact_LightningDrive", "Artifacts/LightningDrive.png", package);
+        RegisterSprite("Ouranos_Artifact_Surge", "Artifacts/PowerSurge.png", package);
 
         RegisterSprite("Ouranos_Cannon", "Parts/ouranos_cannon.png", package);
         RegisterSprite("Ouranos_Cannon_Off", "Parts/ouranos_cannon_off.png", package);
@@ -399,8 +411,8 @@ public sealed class PMod : SimpleMod
             {
                 ship = new Ship()
                 {
-                    hull = 7,
-                    hullMax = 7,
+                    hull = 8,
+                    hullMax = 8,
                     shieldMaxBase = 4,
                     parts =
                     {
@@ -466,8 +478,11 @@ public sealed class PMod : SimpleMod
         RegisterSprite("Fist_Wing", "Parts/fist_wing.png", package);
 
         RegisterSprite("Artifact_Challenger", "Artifacts/Challenger.png", package);
+        RegisterSprite("Artifact_Sweatband", "Artifacts/Sweatband.png", package);
         RegisterSprite("Artifact_ChampionBelt", "Artifacts/ChampionBelt.png", package);
         RegisterSprite("Artifact_HighScore", "Artifacts/HighScore.png", package);
+        RegisterSprite("Artifact_HighScoreLeft", "Artifacts/HighScoreLeft.png", package);
+        RegisterSprite("Artifact_HighScoreRight", "Artifacts/HighScoreRight.png", package);
 
         parts.Add("Fist_Cockpit", Helper.Content.Ships.RegisterPart("Fist_Cockpit", new PartConfiguration()
         {
@@ -488,8 +503,8 @@ public sealed class PMod : SimpleMod
             {
                 ship = new Ship()
                 {
-                    hull = 10,
-                    hullMax = 11,
+                    hull = 12,
+                    hullMax = 13,
                     shieldMaxBase = 5,
                     parts =
                     {
@@ -597,8 +612,8 @@ public sealed class PMod : SimpleMod
             {
                 ship = new Ship()
                 {
-                    hull = 10,
-                    hullMax = 10,
+                    hull = 11,
+                    hullMax = 11,
                     shieldMaxBase = 4,
                     parts =
                     {

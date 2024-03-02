@@ -38,7 +38,7 @@ namespace APurpleApple.Shipyard.Patches
                     bool flipY = !__instance.isPlayerShip;
                     Color? color = new Color(1.0, 1.0, 1.0, 1.0);
 
-                    double u = y + (double)(__instance.isPlayerShip ? -70 : (70)) * part.pulse + 27;
+                    double u = double.Lerp(y + 27, fist.yTarget+30, part.pulse);
                     double d = y + (double)(__instance.isPlayerShip ? 6 : (-6)) * part.pulse + 24;
                     double distance = Math.Abs(u - d);
                     double curveOffset = GetCurveOffset(part.pulse, flipX);
@@ -129,18 +129,20 @@ namespace APurpleApple.Shipyard.Patches
 
             RaycastResult raycastResult = CombatUtils.RaycastFromShipLocal(__1, __2, x.Value, __instance.targetPlayer);
             fist.xTarget = raycastResult.worldX;
+            fist.yTarget = (int)(raycastResult.hitDrone ? FxPositions.Drone(0).y : (raycastResult.hitShip ? FxPositions.Hull(0, false).y : 0));
 
             if (!__1.EnumerateAllArtifacts().Any((x) => x is ArtifactChallengerChampion)) return;
 
             if (!raycastResult.hitShip && !raycastResult.hitDrone)
             {
-                for (int i = -1; i <= 1; i += 2)
+                for (int i = -1; i <= 1; i += 2) 
                 {
                     if (CombatUtils.RaycastGlobal(__2, __2.otherShip, fromDrone: true, raycastResult.worldX + i).hitShip)
                     {
                         __instance.fromX = x + i;
                         fist.pulse = 1.0;
                         fist.xTarget = raycastResult.worldX + i;
+                        fist.yTarget = (int)FxPositions.Hull(0, false).y;
                         break;
                     }
                 }

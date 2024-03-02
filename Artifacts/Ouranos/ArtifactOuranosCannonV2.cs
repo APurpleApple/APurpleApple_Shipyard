@@ -126,6 +126,26 @@ namespace APurpleApple.Shipyard.Artifacts.Ouranos
             if (state.ship.Get(PMod.statuses["RailgunCharge"].Status) > 0)
             {
                 var beam = new AAttack();
+                beam.onKillActions = new List<CardAction>();
+                foreach (AAttack attack in storedAttacks)
+                {
+                    beam.weaken |= attack.weaken;
+                    beam.stunEnemy |= attack.stunEnemy;
+                    if (attack.status.HasValue)
+                    {
+                        beam.status = attack.status;
+                        beam.statusAmount = attack.statusAmount;
+                    }
+                    beam.armorize |= attack.armorize;
+                    beam.brittle |= attack.brittle;
+                    beam.moveEnemy = attack.moveEnemy;
+                    if (attack.onKillActions != null)
+                    {
+                        beam.onKillActions.AddRange(attack.onKillActions);
+                    }
+                    beam.piercing |= attack.piercing;
+                }
+                storedAttacks.Clear();
                 beam.damage = Card.GetActualDamage(state, state.ship.Get(PMod.statuses["RailgunCharge"].Status));
                 combat.QueueImmediate(beam);
                 combat.Queue(new AStatus() { targetPlayer = true, mode = AStatusMode.Set, statusAmount = 0, status = PMod.statuses["RailgunCharge"].Status });
