@@ -95,6 +95,11 @@ namespace APurpleApple.Shipyard.Patches
         {
             if (__instance.ship.key == PMod.ships["Squadron"].UniqueName)
             {
+                foreach (PartSquadronUnit part in __instance.ship.parts.Where((p)=> p is PartSquadronUnit))
+                {
+                    part.pilot = null;
+                }
+
                 foreach (Deck deck in __instance.runConfig.selectedChars)
                 {
                     foreach (Part part in __instance.ship.parts)
