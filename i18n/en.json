@@ -17,7 +17,7 @@
       "description": "Attack cards played from the <c=card>left side of your hand</c> fire from the left fist and push the enemy to the right. The opposite is true for the right fist. Attacks from a card in <c=card>the center of your hand</c> are fired by both."
     },
     "ChampionBelt": {
-      "name": "CHAMPION'S BELT",
+      "name": "FLEXIBLE JOINTS",
       "description": "If a fist would miss by 1 space, it hits the next part nearest to the center instead."
     },
     "Sweatband": {
@@ -59,7 +59,7 @@
   },
   "action": {
     "TossPart": {
-      "name":"EJECT PART",
+      "name": "EJECT PART",
       "description": "Eject the hilighted part until the next turn for <c=damage>1</c> damage.",
       "description2": "Eject the hilighted part for 2 turns, dealing <c=damage>2</c> damage."
     }
@@ -94,6 +94,19 @@
     "RailgunCharge": {
       "name": "RAILGUN CHARGE",
       "description": "Attacks have been loaded into the railgun, and will be release at turn end for {0} damages"
+    }
+  },
+  "tooltips": {
+    "Highscore": {
+      "5": "<c=FFDD00>5+</c> At combat start, gain 2 <c=status>EVADE</c>.",
+      "10": "<c=FFDD00>10+</c> Gain an additional card reward choice.",
+      "20": "<c=FFDD00>25+</c> At turn start, gain 1 <c=status>ENERGY</c>.",
+      "35": "<c=FFDD00>35+</c> Your attacks deal 1 additional damage.",
+      "50": "<c=FFDD00>50+</c> At combat start, heal 1.",
+      "100": "<c=FFDD00>100+</c> Your attacks deal 1 additional damage.",
+      "250": "<c=FFDD00>250+</c> Your attacks deal 1 additional damage.",
+      "500": "<c=FFDD00>500+</c> Your attacks deal 1 additional damage.",
+      "999": "<c=FFDD00>999+</c> At combat start, gain 999 <c=status>POWERDRIVE</c>."
     }
   },
   "card": {

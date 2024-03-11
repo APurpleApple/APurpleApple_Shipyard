@@ -9,7 +9,6 @@ namespace APurpleApple.Shipyard.Parts
     public class PartSquadronUnit : Part
     {
         public Deck? pilot = null;
-        public bool hasCrown = false;
         public double yLerped = 0;
     }
 }

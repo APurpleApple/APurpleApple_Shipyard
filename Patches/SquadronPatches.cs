@@ -14,6 +14,22 @@ namespace APurpleApple.Shipyard.Patches
     [HarmonyPatch]
     internal static class SquadronPatches
     {
+        public static Deck? GetLeader(State s)
+        {
+            ArtifactSquadron? artifact = s.EnumerateAllArtifacts().Find((a) => a is ArtifactSquadron) as ArtifactSquadron;
+
+            return artifact == null ? null : artifact.leader;
+        }
+
+        public static void SetLeader(State s, Deck? leader)
+        {
+            ArtifactSquadron? artifact = s.EnumerateAllArtifacts().Find((a) => a is ArtifactSquadron) as ArtifactSquadron;
+
+            if (artifact == null) return;
+
+            artifact.leader = leader;
+        }
+
         [HarmonyPatch(typeof(Ship), nameof(Ship.DrawTopLayer)), HarmonyPostfix]
         public static void DrawStuff(Ship __instance, G __0, Vec __1, Vec __2)
         {
@@ -36,6 +52,8 @@ namespace APurpleApple.Shipyard.Patches
                         j++;
                     }
                 }
+
+                Deck? leader = GetLeader(g.state);
 
                 j = 0;
                 for (int i = 0; i < __instance.parts.Count; i++)
@@ -80,7 +98,7 @@ namespace APurpleApple.Shipyard.Patches
                         }
                     }
 
-                    if (unit.hasCrown)
+                    if (unit.pilot == leader)
                     {
                         Draw.Sprite(PMod.sprites["Squadron_Crown"].Sprite, partPos.x, partPos.y, color: Colors.white.fadeAlpha(Math.Abs(Math.Sin(g.time * 2))));
                     }
@@ -102,6 +120,7 @@ namespace APurpleApple.Shipyard.Patches
 
                 foreach (Deck deck in __instance.runConfig.selectedChars)
                 {
+                    SetLeader(__instance, deck);
                     foreach (Part part in __instance.ship.parts)
                     {
                         if (part is PartSquadronUnit squadronUnit)
@@ -111,19 +130,6 @@ namespace APurpleApple.Shipyard.Patches
                                 squadronUnit.pilot = deck;
                                 break;
                             }
-                        }
-                    }
-                }
-
-                ArtifactSquadron? art = __instance.artifacts.Find((x) => x is ArtifactSquadron) as ArtifactSquadron;
-                if (art != null)
-                {
-                    foreach (Part part in __instance.ship.parts)
-                    {
-                        if (part is PartSquadronUnit squadronUnit && squadronUnit.hasCrown)
-                        {
-                            art.activePilot = squadronUnit.pilot;
-                            break;
                         }
                     }
                 }
@@ -142,20 +148,14 @@ namespace APurpleApple.Shipyard.Patches
             if (g.state.ship.key != PMod.ships["Squadron"].UniqueName) return;
             Combat c = __instance;
 
-            if (!c.isPlayerTurn || g.state.ship.hull <= 0 || c.otherShip.hull <= 0 || g.state.ship.Get(SStatus.evade) <= 0)
+            if (!c.isPlayerTurn || g.state.ship.hull <= 0 || c.otherShip.hull <= 0)
             {
                 return;
             }
 
-            if (g.state.route is Combat combat)
+            if (PMod.kokoroApi == null && g.state.ship.Get(SStatus.evade) <= 0)
             {
-                foreach (Card item in combat.hand)
-                {
-                    if (item is TrashAnchor)
-                    {
-                        return;
-                    }
-                }
+                return;
             }
 
             int j = 0;
@@ -163,9 +163,6 @@ namespace APurpleApple.Shipyard.Patches
             {
                 Part part = g.state.ship.parts[i];
                 if (part is not PartSquadronUnit unit) continue;
-
-                double yOffset = j % 2 == 0 ? 0 : -9;
-                j++;
 
                 if (unit.pilot.HasValue)
                 {
@@ -178,9 +175,12 @@ namespace APurpleApple.Shipyard.Patches
                         }
                     }
                 }
-                double x = (Combat.arenaPos + c.GetCamOffset() + g.state.ship.GetWorldPos(g.state, c)).x + ((part.xLerped ?? ((double)i)) * 16.0);
 
-                if (i != 0 || g.state.ship.parts.Count < 20)
+                double x = (Combat.arenaPos + c.GetCamOffset() + g.state.ship.GetWorldPos(g.state, c)).x + ((part.xLerped ?? ((double)i)) * 16.0);
+                double yOffset = j % 2 == 0 ? 0 : -9;
+                j++;
+
+                if ((i != 0 || g.state.ship.parts.Count < 20) && (PMod.kokoroApi == null || PMod.kokoroApi.IsEvadePossible(g.state, c, 1, ExternalAPIs.EvadeHookContext.Rendering)))
                 {
                     UIKey uIKey = new UIKey(SUK.btn_move_left, j);
                     Rect rect = new Rect(x - 6, 111.0 + yOffset, 8.0, 11.0);
@@ -194,7 +194,7 @@ namespace APurpleApple.Shipyard.Patches
                     }
                 }
 
-                if (i != 19)
+                if (i != 19 && (PMod.kokoroApi == null || PMod.kokoroApi.IsEvadePossible(g.state, c, 1, ExternalAPIs.EvadeHookContext.Rendering)))
                 {
                     UIKey uIKey = new UIKey(SUK.btn_move_right, j);
                     Rect rect = new Rect(x + 13, 111.0 + yOffset, 8.0, 11.0);
@@ -229,12 +229,16 @@ namespace APurpleApple.Shipyard.Patches
             if (g.hoverKey == UK.btn_move_left || g.hoverKey == UK.btn_move_right)
             {
                 int j = 0;
+
                 Ship ship = g.state.ship;
                 for (int i = 0; i < ship.parts.Count; i++)
                 {
                     if (g.state.ship.parts[i] is not PartSquadronUnit unit) continue;
                     j++;
-                    unit.hasCrown = j == g.hoverKey.Value.v;
+                    if (j == g.hoverKey.Value.v)
+                    {
+                        SetLeader(g.state, unit.pilot);
+                    }
                 }
             }
         }
@@ -253,11 +257,7 @@ namespace APurpleApple.Shipyard.Patches
 
                     if (hitPart != null)
                     {
-                        foreach (PartSquadronUnit part in target.parts.Where((p) => p is PartSquadronUnit))
-                        {
-                            part.hasCrown = false;
-                        }
-                        hitPart.hasCrown = true;
+                        SetLeader(MG.inst.g.state, hitPart.pilot);
 
                         c.QueueImmediate(new List<CardAction>
                         {
@@ -282,11 +282,7 @@ namespace APurpleApple.Shipyard.Patches
 
                     if (hitPart != null)
                     {
-                        foreach (PartSquadronUnit part in target.parts.Where((p) => p is PartSquadronUnit))
-                        {
-                            part.hasCrown = false;
-                        }
-                        hitPart.hasCrown = true;
+                        SetLeader(MG.inst.g.state, hitPart.pilot);
 
                         c.QueueImmediate(new List<CardAction>
                         {
@@ -323,7 +319,7 @@ namespace APurpleApple.Shipyard.Patches
                 if (s.ship.parts[i] is not PartSquadronUnit unit) continue;
                 j++;
 
-                if (unit.hasCrown)
+                if (unit.pilot == art.leader)
                 {
                     int targetIndex = i + __instance.dir;
                     
@@ -406,6 +402,7 @@ namespace APurpleApple.Shipyard.Patches
             if (__0.state.ship.key != PMod.ships["Squadron"].UniqueName) return;
             if (__1.route is Combat c)
             {
+                Deck? leader = GetLeader(__0.state);
                 List<CardAction> actionsOverridden = __instance.GetActionsOverridden(__1, (__1.route as Combat) ?? DB.fakeCombat);
                 foreach (CardAction action in actionsOverridden)
                 {
@@ -427,7 +424,7 @@ namespace APurpleApple.Shipyard.Patches
                         {
                             foreach (Part part in __1.ship.parts)
                             {
-                                if (part is PartSquadronUnit unit && unit.hasCrown)
+                                if (part is PartSquadronUnit unit && unit.pilot == leader)
                                 {
                                     unit.hilight = true;
                                     break;
@@ -448,14 +445,12 @@ namespace APurpleApple.Shipyard.Patches
             Combat c = __2;
             if (!__instance.targetPlayer)
             {
-                ArtifactSquadron? art = s.EnumerateAllArtifacts().Find((x) => x is ArtifactSquadron) as ArtifactSquadron;
-                if ( art != null) {
-                    foreach (Part part in __1.ship.parts)
+                Deck? leader = GetLeader(s);
+                foreach (Part part in __1.ship.parts)
+                {
+                    if (part is PartSquadronUnit unit)
                     {
-                        if (part is PartSquadronUnit unit)
-                        {
-                            unit.type = unit.hasCrown ? PType.cannon : PType.special;
-                        }
+                        unit.type = unit.pilot == leader ? PType.cannon : PType.special;
                     }
                 }
             }
@@ -469,15 +464,12 @@ namespace APurpleApple.Shipyard.Patches
             Combat c = __2;
             if (__instance.fromPlayer)
             {
-                ArtifactSquadron? art = s.EnumerateAllArtifacts().Find((x) => x is ArtifactSquadron) as ArtifactSquadron;
-                if (art != null)
+                Deck? leader = GetLeader(s);
+                foreach (Part part in __1.ship.parts)
                 {
-                    foreach (Part part in __1.ship.parts)
+                    if (part is PartSquadronUnit unit)
                     {
-                        if (part is PartSquadronUnit unit )
-                        {
-                            unit.type = unit.hasCrown ? PType.missiles : PType.special;
-                        }
+                        unit.type = unit.pilot == leader ? PType.missiles : PType.special;
                     }
                 }
             }
@@ -489,9 +481,10 @@ namespace APurpleApple.Shipyard.Patches
             if (__0.ship.key != PMod.ships["Squadron"].UniqueName) return __result;
             if (!__instance.targetPlayer)
             {
+                Deck? leader = GetLeader(__0);
                 foreach (Part part in __0.ship.parts)
                 {
-                    if (part is PartSquadronUnit unit && unit.hasCrown)
+                    if (part is PartSquadronUnit unit && unit.pilot == leader)
                     {
                         return true;
                     }

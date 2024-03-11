@@ -12,7 +12,7 @@ namespace APurpleApple.Shipyard.Artifacts.Squadron
 {
     internal class ArtifactSquadron : Artifact, IModArtifact
     {
-        public Deck? activePilot = null;
+        public Deck? leader = null;
 
         public static void Register(IModHelper helper)
         {
@@ -37,7 +37,7 @@ namespace APurpleApple.Shipyard.Artifacts.Squadron
             int i = 0;
             foreach (var item in state.ship.parts)
             {
-                if (item is PartSquadronUnit unit)
+                if (item is PartSquadronUnit unit && i < state.characters.Count)
                 {
                     unit.pilot = state.characters[i].deckType;
                     i++;
@@ -89,17 +89,9 @@ namespace APurpleApple.Shipyard.Artifacts.Squadron
                 {
                     if (unit.pilot == deck)
                     {
-                        activePilot = deck;
+                        leader = deck;
                         break;
                     }
-                }
-            }
-
-            foreach (Part part in state.ship.parts)
-            {
-                if (part is PartSquadronUnit unit)
-                {
-                    unit.hasCrown = unit.pilot == activePilot;
                 }
             }
         }

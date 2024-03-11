@@ -15,7 +15,8 @@ using APurpleApple.Shipyard.Cards;
 using APurpleApple.Shipyard.Artifacts;
 using Nanoray.EnumByNameSourceGenerator;
 using APurpleApple.Shipyard.Artifacts.Squadron;
-
+using APurpleApple.Shipyard.ExternalAPIs;
+using System.Reflection;
 
 namespace APurpleApple.Shipyard;
 
@@ -35,6 +36,9 @@ public sealed class PMod : SimpleMod
     public static Dictionary<string, ICharacterEntry> characters = new();
     public static Dictionary<string, IShipEntry> ships = new();
     public static Dictionary<string, IDeckEntry> decks = new();
+
+    public static IKokoroApi? kokoroApi { get; private set; }
+
     internal static IReadOnlyList<Type> Registered_Card_Types { get; } = [
         typeof(CardOuranosSpark),
         typeof(CardAsteroidShot),
@@ -57,7 +61,7 @@ public sealed class PMod : SimpleMod
         typeof(ArtifactAsteroid),
         typeof(ArtifactSquadron),
         typeof(ArtifactSquadronPlus),
-        //typeof(ArtifactChallengerHighScore),
+        typeof(ArtifactChallengerHighScore),
     ];
 
     internal static IReadOnlyList<Type> IronExpressExclusiveArtifacts { get; } = [
@@ -70,7 +74,7 @@ public sealed class PMod : SimpleMod
         typeof(ArtifactChallenger),
         typeof(ArtifactChallengerChampion),
         typeof(ArtifactChallengerSweatband),
-        //typeof(ArtifactChallengerHighScore),
+        typeof(ArtifactChallengerHighScore),
     ];
 
     internal static IReadOnlyList<Type> OuranosExclusiveArtifacts { get; } = [
@@ -147,7 +151,19 @@ public sealed class PMod : SimpleMod
 
         foreach (var artifactType in Registered_Artifact_Types)
             AccessTools.DeclaredMethod(artifactType, nameof(IModArtifact.Register))?.Invoke(null, [helper]);
+
+        helper.Events.OnModLoadPhaseFinished += (object? sender, ModLoadPhase e) => {
+            if (e == ModLoadPhase.AfterDbInit)
+            {
+                helper.ModRegistry.GetApi<IDraculaApi>("Shockah.Dracula")?.RegisterBloodTapOptionProvider(statuses["ElectricCharge"].Status, (_, _, status) => [
+                    new AHurt { targetPlayer = true, hurtAmount = 1 },
+                    new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+                ]);
+                kokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro");
+            }
+        };
     }
+
 
     private void RegisterSquadronShip(IPluginPackage<IModManifest> package)
     {
@@ -189,7 +205,6 @@ public sealed class PMod : SimpleMod
                             type = PType.special,
                             skin = "",
                             damageModifier = PDamMod.none,
-                            hasCrown = true,
                             key = "SquadronUnit"
                         },
                         new Part()
@@ -676,4 +691,5 @@ public sealed class PMod : SimpleMod
             Description = this.AnyLocalizations.Bind(["ship", "Rail", "description"]).Localize
         }));
     }
+
 }
