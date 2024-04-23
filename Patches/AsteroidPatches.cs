@@ -5,6 +5,7 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using APurpleApple.Shipyard.Artifacts;
+using APurpleApple.Shipyard.Cards;
 using HarmonyLib;
 namespace APurpleApple.Shipyard.Patches
 {
@@ -69,6 +70,15 @@ namespace APurpleApple.Shipyard.Patches
                 {
                     move.disabled = true;
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(InitialBooster), nameof(InitialBooster.ModifyBaseDamage)), HarmonyPostfix]
+        public static void InitialBoosterPostfix(ref int __result, int baseDamage, Card? card, State state, Combat? combat, bool fromPlayer)
+        {
+            if (card is CardAsteroidShot)
+            {
+                __result = 1;
             }
         }
 
