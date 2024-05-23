@@ -45,9 +45,11 @@ namespace APurpleApple.Shipyard.CardActions
             if (ejectedPart == null) return;
             ArtifactAsteroid? artifact = s.artifacts.Find((x) => x is ArtifactAsteroid) as ArtifactAsteroid;
             if (artifact == null) return;
-            
-            artifact.ejectedParts.Add(ejectedPart);
-            artifact.turnBeforeComeback.Add(far ? 2 : 1);
+            if (ejectedPart.key == null) return;
+
+            artifact.ejectedParts.Add(ejectedPart.key, ejectedPart);
+            artifact.turnsBeforeComeback.Add(ejectedPart.key, far ? 2 : 1);
+            artifact.originalPlace.Add(ejectedPart.key, localX);
             Ship ship = c.otherShip;
             int damage = far ? 2 : 1;
             RaycastResult raycastResult = CombatUtils.RaycastFromShipLocal(s, c, localX, false);

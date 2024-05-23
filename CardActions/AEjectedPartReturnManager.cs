@@ -3,6 +3,7 @@ using APurpleApple.Shipyard.VFXs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,23 +17,19 @@ namespace APurpleApple.Shipyard.CardActions
             if (artifact == null) return;
             c.Queue(new CardAction() { timer = 1 });
 
-            int index = 0;
-            for (var i = 0; i < s.ship.parts.Count; i++)
+
+            foreach (var item in artifact.ejectedParts.Values)
             {
-                if (s.ship.parts[i].key == "AsteroidScaffolding" && artifact.ejectedParts.Count > index)
+                if (item.key == null) continue;
+                artifact.turnsBeforeComeback[item.key]--;
+                if (artifact.turnsBeforeComeback[item.key] == 0)
                 {
-                    artifact.turnBeforeComeback[index]--;
-                    if (artifact.turnBeforeComeback[index] == 0)
-                    {
-                        c.Queue(new AEjectedPartReturn() { part = artifact.ejectedParts[index], index = i, timer = 0 });
-                        c.fx.Add(new PartEjectionReturn() { part = artifact.ejectedParts[index], worldX = (i + s.ship.x) * 16 });
-                        artifact.turnBeforeComeback.RemoveAt(index);
-                        artifact.ejectedParts.RemoveAt(index);
-                    }
-                    else
-                    {
-                        index++;
-                    }
+                    c.Queue(new AEjectedPartReturn() { part = item, index = artifact.originalPlace[item.key], timer = 0 });
+                    c.fx.Add(new PartEjectionReturn() { part = item, worldX = (artifact.originalPlace[item.key] + s.ship.x) * 16 });
+
+                    artifact.turnsBeforeComeback.Remove(item.key);
+                    artifact.ejectedParts.Remove(item.key);
+                    artifact.originalPlace.Remove(item.key);
                 }
             }
         }

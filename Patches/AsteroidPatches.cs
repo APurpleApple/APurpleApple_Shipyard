@@ -42,7 +42,7 @@ namespace APurpleApple.Shipyard.Patches
         [HarmonyPatch(typeof(AStatus), nameof(AStatus.Begin)), HarmonyPrefix]
         public static void StopShieldPrefix(AStatus __instance, G __0, State __1, Combat __2)
         {
-            if (__instance.status == SStatus.shield || __instance.status == SStatus.tempShield)
+            if (__instance.status == SStatus.shield || __instance.status == SStatus.tempShield && __instance.targetPlayer == true)
             {
                 if (!CanShield(__1))
                 {
@@ -54,7 +54,7 @@ namespace APurpleApple.Shipyard.Patches
         [HarmonyPatch(typeof(Card), nameof(Card.RenderAction)), HarmonyPrefix]
         public static void DisableShieldActionsPostfix(State state, CardAction action)
         {
-            if (action is AStatus a)
+            if (action is AStatus a && a.targetPlayer == true)
             {
                 if (a.status == SStatus.shield || a.status == SStatus.tempShield)
                 {

@@ -2,7 +2,7 @@
   "artifact": {
     "IronExpress": {
       "name": "IRON EXPRESS",
-      "description": "Immediately after you play <c=card>the leftmost/ rightmost card in your hand</c>, your cannon slides left/right 1. Immediately after you play <c=card>the middle card in your hand</c>, your cannon rotates and is replaced by an armored shield."
+      "description": "Immediately after you play <c=card>the leftmost/ rightmost card in your hand</c>, your cannon slides left/right 1. Immediately after you play <c=card>the middle card in your hand</c>, your cannon rotates and is replaced by an armored shield, giving you 2 <c=status>SHIELD</c>."
     },
     "IronExpressV2": {
       "name": "SPIN TO WIN",

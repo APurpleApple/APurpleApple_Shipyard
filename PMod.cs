@@ -130,8 +130,6 @@ public sealed class PMod : SimpleMod
     {
         Instance = this;
 
-        Patch();
-
         this.AnyLocalizations = new JsonLocalizationProvider(
             tokenExtractor: new SimpleLocalizationTokenExtractor(),
             localeStreamFunction: locale => package.PackageRoot.GetRelativeFile($"i18n/{locale}.json").OpenRead()
@@ -155,6 +153,8 @@ public sealed class PMod : SimpleMod
         helper.Events.OnModLoadPhaseFinished += (object? sender, ModLoadPhase e) => {
             if (e == ModLoadPhase.AfterDbInit)
             {
+                Patch();
+
                 helper.ModRegistry.GetApi<IDraculaApi>("Shockah.Dracula")?.RegisterBloodTapOptionProvider(statuses["ElectricCharge"].Status, (_, _, status) => [
                     new AHurt { targetPlayer = true, hurtAmount = 1 },
                     new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
@@ -289,9 +289,9 @@ public sealed class PMod : SimpleMod
             {
                 ship = new Ship()
                 {
-                    hull = 6,
-                    hullMax = 6,
-                    shieldMaxBase = 3,
+                    hull = 8,
+                    hullMax = 8,
+                    shieldMaxBase = 4,
                     parts =
                     {
                         new Part()

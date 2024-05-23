@@ -28,9 +28,10 @@ namespace APurpleApple.Shipyard.Patches
                 {
                     if (__instance.damage > 0)
                     {
-                        int? x = __instance.GetFromX(s, c);
+                        object[] param = { s, c };
+                        int? x = (int?)__instance.GetType().Method("GetFromX").Invoke(obj:__instance, parameters: param);
 
-                        if (x.HasValue)
+                        if (x.HasValue && x == s.ship.parts.FindIndex((Part p) => p.type == PType.cannon && p.active))
                         {
                             EffectSpawnerExtension.RailgunBeam(c, s.ship.x + x.Value, __instance.damage, new Color("ff8866"));
                         }

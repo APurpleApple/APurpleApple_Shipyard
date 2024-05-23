@@ -42,6 +42,12 @@ namespace APurpleApple.Shipyard.Artifacts.IronExpress
                 if (state.route is Combat c)
                 {
                     c.Queue(new AIronExpressCannonRotate());
+
+                    PartRailCannon? cannon = state.ship.parts.First(p => p is PartRailCannon) as PartRailCannon;
+                    if (cannon != null && cannon.isCannon)
+                    {
+                        c.Queue(new AStatus() { targetPlayer = true, status = SStatus.shield, statusAmount = 2});
+                    }
                 }
             }
 

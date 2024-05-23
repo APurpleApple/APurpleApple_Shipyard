@@ -15,8 +15,9 @@ namespace APurpleApple.Shipyard.Artifacts
     {
         public int fistMovement = 0;
 
-        public List<Part> ejectedParts = new List<Part>();
-        public List<int> turnBeforeComeback = new List<int>();
+        public Dictionary<string, Part> ejectedParts = new();
+        public Dictionary<string, int> turnsBeforeComeback = new();
+        public Dictionary<string, int> originalPlace = new();
 
         public static void Register(IModHelper helper)
         {
@@ -45,16 +46,20 @@ namespace APurpleApple.Shipyard.Artifacts
         public override void OnCombatEnd(State state)
         {
             if (ejectedParts.Count == 0) return;
-            int index = 0;
-            for (var i = 0; i < state.ship.parts.Count; i++)
+            foreach (var item in ejectedParts.Values)
             {
-                if (state.ship.parts[i].key == "AsteroidScaffolding" && ejectedParts.Count > index)
+                if (item.key == null) continue;
+                turnsBeforeComeback[item.key]--;
+                if (turnsBeforeComeback[item.key] == 0)
                 {
-                    state.ship.parts[i] = ejectedParts[index];
-                    ejectedParts[index].xLerped = i;
-                    index++;
+                    state.ship.parts[originalPlace[item.key]] = item;
+
+                    turnsBeforeComeback.Remove(item.key);
+                    ejectedParts.Remove(item.key);
+                    originalPlace.Remove(item.key);
                 }
             }
+
             ejectedParts.Clear();
         }
     }
