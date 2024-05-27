@@ -37,6 +37,8 @@ public sealed class PMod : SimpleMod
     public static Dictionary<string, IShipEntry> ships = new();
     public static Dictionary<string, IDeckEntry> decks = new();
 
+    public static List<Tuple<Type, PType>> cardActionLooksForType = new();
+
     public static IKokoroApi? kokoroApi { get; private set; }
 
     internal static IReadOnlyList<Type> Registered_Card_Types { get; } = [
@@ -93,6 +95,7 @@ public sealed class PMod : SimpleMod
         typeof(ArtifactSquadronPlus),
     ];
 
+    public override object? GetApi(IModManifest requestingMod) => new ApiImplementation();
 
     public void RegisterSprite(string key, string fileName, IPluginPackage<IModManifest> package)
     {
@@ -116,11 +119,12 @@ public sealed class PMod : SimpleMod
         pref = new HarmonyMethod(typeof(ChallengerPatches).GetMethod(nameof(ChallengerPatches.ChampionBelt)));
         harmony.PatchVirtual(typeof(AAttack).GetMethod(nameof(AAttack.Begin)), Logger, prefix: pref);
 
-        pref = new HarmonyMethod(typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.ActivateBays)));
-        harmony.PatchVirtual(typeof(ASpawn).GetMethod(nameof(ASpawn.Begin)), Logger, prefix: pref);
-
-        pref = new HarmonyMethod(typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.ActivateCannons)));
-        harmony.PatchVirtual(typeof(AAttack).GetMethod(nameof(AAttack.Begin)), Logger, prefix: pref);
+        pref = new HarmonyMethod(typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.ActivateParts)));
+        harmony.TryPatchVirtual(
+            original:()=>typeof(CardAction).GetMethod(nameof(CardAction.Begin)),
+            logger: Logger,
+            prefix: pref
+            );
 
         postf = new HarmonyMethod(typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.DetectCannons)));
         harmony.PatchVirtual(typeof(AAttack).GetMethod(nameof(AAttack.DoWeHaveCannonsThough)), Logger, postfix: postf);
@@ -160,8 +164,16 @@ public sealed class PMod : SimpleMod
                     new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
                 ]);
                 kokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro");
+
+                if (kokoroApi != null)
+                {
+                    kokoroApi.RegisterEvadeHook(new SquadronKokoroEvadeHook(), int.MaxValue);
+                }
             }
         };
+
+        cardActionLooksForType.Add(new Tuple<Type, PType>(typeof(AAttack), PType.cannon));
+        cardActionLooksForType.Add(new Tuple<Type, PType>(typeof(ASpawn), PType.missiles));
     }
 
 
@@ -690,6 +702,8 @@ public sealed class PMod : SimpleMod
             Name = this.AnyLocalizations.Bind(["ship", "Rail", "name"]).Localize,
             Description = this.AnyLocalizations.Bind(["ship", "Rail", "description"]).Localize
         }));
+
+
     }
 
 }

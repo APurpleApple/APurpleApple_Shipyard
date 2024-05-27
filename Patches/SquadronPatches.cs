@@ -226,15 +226,15 @@ namespace APurpleApple.Shipyard.Patches
         public static void SetLeaderOnMove(G g)
         {
             if (g.state.ship.key != PMod.ships["Squadron"].UniqueName) return;
-            if (g.hoverKey == UK.btn_move_left || g.hoverKey == UK.btn_move_right)
+            if (g.hoverKey == SUK.btn_move_left || g.hoverKey == SUK.btn_move_right)
             {
                 int j = 0;
-
                 Ship ship = g.state.ship;
                 for (int i = 0; i < ship.parts.Count; i++)
                 {
                     if (g.state.ship.parts[i] is not PartSquadronUnit unit) continue;
                     j++;
+
                     if (j == g.hoverKey.Value.v)
                     {
                         SetLeader(g.state, unit.pilot);
@@ -406,7 +406,22 @@ namespace APurpleApple.Shipyard.Patches
                 List<CardAction> actionsOverridden = __instance.GetActionsOverridden(__1, (__1.route as Combat) ?? DB.fakeCombat);
                 foreach (CardAction action in actionsOverridden)
                 {
-                    if (action is AAttack || action is ASpawn)
+                    Type actionType = action.GetType();
+                    PType? pType = null;
+                    foreach (var item in PMod.cardActionLooksForType)
+                    {
+                        if (item.Item1 == actionType)
+                        {
+                            pType = item.Item2;
+                            break;
+                        }
+                        else if (actionType.IsSubclassOf(item.Item1))
+                        {
+                            pType = item.Item2;
+                            break;
+                        }
+                    }
+                    if (pType != null)
                     {
                         bool foundPilot = false;
                         foreach (Part part in __1.ship.parts)
@@ -437,39 +452,37 @@ namespace APurpleApple.Shipyard.Patches
             }
         }
 
-        //PatchVirtual [HarmonyPatch(typeof(AAttack), nameof(AAttack.Begin)), HarmonyPrefix]
-        public static void ActivateCannons(State __1, Combat __2, AAttack __instance)
+        //PatchVirtual [HarmonyPatch(typeof(CardAction), nameof(CardAction.Begin)), HarmonyPrefix]
+        public static void ActivateParts(G __0, State __1, Combat __2, CardAction __instance)
         {
-            if (__1.ship.key != PMod.ships["Squadron"].UniqueName) return;
             State s = __1;
-            Combat c = __2;
-            if (!__instance.targetPlayer)
+            if (s.ship.key != PMod.ships["Squadron"].UniqueName) return;
+
+            Type t = __instance.GetType();
+            PType? pType = null;
+
+
+            for (int i = PMod.cardActionLooksForType.Count-1; i >= 0 ; i--)
             {
-                Deck? leader = GetLeader(s);
-                foreach (Part part in __1.ship.parts)
+                if (PMod.cardActionLooksForType[i].Item1 == t)
                 {
-                    if (part is PartSquadronUnit unit)
-                    {
-                        unit.type = unit.pilot == leader ? PType.cannon : PType.special;
-                    }
+                    pType = PMod.cardActionLooksForType[i].Item2;
+                    break;
+                }
+                else if (t.IsSubclassOf(PMod.cardActionLooksForType[i].Item1))
+                {
+                    pType = PMod.cardActionLooksForType[i].Item2;
                 }
             }
-        }
 
-        //PatchVirtual [HarmonyPatch(typeof(ASpawn), nameof(ASpawn.Begin)), HarmonyPrefix]
-        public static void ActivateBays(State __1, Combat __2, ASpawn __instance)
-        {
-            if (__1.ship.key != PMod.ships["Squadron"].UniqueName) return;
-            State s = __1;
-            Combat c = __2;
-            if (__instance.fromPlayer)
+            if (pType != null)
             {
                 Deck? leader = GetLeader(s);
-                foreach (Part part in __1.ship.parts)
+                foreach (Part part in s.ship.parts)
                 {
                     if (part is PartSquadronUnit unit)
                     {
-                        unit.type = unit.pilot == leader ? PType.missiles : PType.special;
+                        unit.type = unit.pilot == leader ? pType.Value : PType.special;
                     }
                 }
             }
@@ -481,14 +494,7 @@ namespace APurpleApple.Shipyard.Patches
             if (__0.ship.key != PMod.ships["Squadron"].UniqueName) return __result;
             if (!__instance.targetPlayer)
             {
-                Deck? leader = GetLeader(__0);
-                foreach (Part part in __0.ship.parts)
-                {
-                    if (part is PartSquadronUnit unit && unit.pilot == leader)
-                    {
-                        return true;
-                    }
-                }
+                return true;
             }
 
             return __result;

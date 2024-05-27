@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using APurpleApple.Shipyard.CardActions;
 
-namespace APurpleApple_VoltMod.Patchs
+namespace APurpleApple.Shipyard.Patches
 {
     [HarmonyPatch]
     public static class PatchDrawOversizedActions

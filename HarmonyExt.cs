@@ -150,6 +150,9 @@ public static class HarmonyExt
 
                 foreach (Type subtype in subtypes)
                 {
+                    //???
+                    if (subtype == typeof(AJumpScript)) continue;
+
                     try
                     {
                         var originalParameters = originalMethod.GetParameters();
