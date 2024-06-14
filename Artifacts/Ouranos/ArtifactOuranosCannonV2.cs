@@ -66,6 +66,7 @@ namespace APurpleApple.Shipyard.Artifacts.Ouranos
         {
             storedAttacks.Add(attack);
             Pulse();
+            combat.QueueImmediate(new AStatus() { targetPlayer = true, status = PMod.statuses["ElectricCharge"].Status, statusAmount = -1 });
             combat.QueueImmediate(new AStatus() { targetPlayer = true, status = PMod.statuses["RailgunCharge"].Status, statusAmount = attack.damage });
         }
 

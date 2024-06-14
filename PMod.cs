@@ -148,6 +148,7 @@ public sealed class PMod : SimpleMod
         RegisterAsteroidShip(package);
         RegisterSquadronShip(package);
 
+
         foreach (var cardType in Registered_Card_Types)
             AccessTools.DeclaredMethod(cardType, nameof(IModCard.Register))?.Invoke(null, [helper]);
 
@@ -185,6 +186,8 @@ public sealed class PMod : SimpleMod
         RegisterSprite("Squadron_Color_Decal", "Parts/squadron_color_decal.png", package);
         RegisterSprite("Squadron_MoveButton", "UI/squadron_move_right.png", package);
         RegisterSprite("Squadron_MoveButtonOn", "UI/squadron_move_right_on.png", package);
+        RegisterSprite("Squadron_MoveButtonColor", "UI/squadron_move_right_color.png", package);
+        RegisterSprite("Squadron_MoveButtonColorOn", "UI/squadron_move_right_color_on.png", package);
         RegisterSprite("Squadron_Crown", "Icons/crown.png", package);
         RegisterSprite("Squadron_Artifact", "Artifacts/Squadron.png", package);
         RegisterSprite("Squadron_ArtifactPlus", "Artifacts/Squadron4th.png", package);

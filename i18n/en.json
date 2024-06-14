@@ -34,7 +34,7 @@
     },
     "Ouranos_V2": {
       "name": "OURANOS RAILGUN V2",
-      "description": "Replaces <c=artifact>OURANOS RAILGUN</c>.\nAt the end of your turn, gain 1 <c=ffe93b>ELECTRIC CHARGE</c>. Your attacks are stored in your cannon and are fired all at once on turn end."
+      "description": "Replaces <c=artifact>OURANOS RAILGUN</c>.\nAt the end of your turn, gain 1 <c=ffe93b>ELECTRIC CHARGE</c>. Your attacks are stored in your cannon and are fired all at once on turn end. \n<c=downside>Lose 1 </c><c=ffe93b>ELECTRIC CHARGE</c><c=downside> every time an attack is stored.</c>"
     },
     "PowerSurge": {
       "name": "POWER SURGE",

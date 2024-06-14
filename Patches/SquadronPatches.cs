@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using static SharedArt;
 
 namespace APurpleApple.Shipyard.Patches
 {
@@ -164,26 +165,31 @@ namespace APurpleApple.Shipyard.Patches
                 Part part = g.state.ship.parts[i];
                 if (part is not PartSquadronUnit unit) continue;
 
+                Color color = Colors.white;
+
                 if (unit.pilot.HasValue)
                 {
+                    color = DB.decks[unit.pilot.Value].color;
                     Status missingStatus;
                     if (StatusMeta.deckToMissingStatus.TryGetValue(unit.pilot.Value, out missingStatus))
                     {
                         if (g.state.ship.Get(missingStatus) > 0)
                         {
+                            j++;
                             continue;
                         }
                     }
                 }
 
                 double x = (Combat.arenaPos + c.GetCamOffset() + g.state.ship.GetWorldPos(g.state, c)).x + ((part.xLerped ?? ((double)i)) * 16.0);
-                double yOffset = j % 2 == 0 ? 0 : -9;
+                double yOffset = j % 2 == 0 ? 24 : -8;
                 j++;
+
 
                 if ((i != 0 || g.state.ship.parts.Count < 20) && (PMod.kokoroApi == null || PMod.kokoroApi.IsEvadePossible(g.state, c, 1, ExternalAPIs.EvadeHookContext.Rendering)))
                 {
                     UIKey uIKey = new UIKey(SUK.btn_move_left, j);
-                    Rect rect = new Rect(x - 6, 111.0 + yOffset, 8.0, 11.0);
+                    Rect rect = new Rect(x - 4, 111.0 + yOffset , 8.0, 11.0);
                     UIKey key = uIKey;
                     OnMouseDown onMouseDown = c ;
                     bool showAsPressed = !c.eyeballPeek && Input.GetGpHeld(Btn.TriggerL);
@@ -192,12 +198,13 @@ namespace APurpleApple.Shipyard.Patches
                     {
                         c.isHoveringMove = 2;
                     }
+                    Draw.Sprite(buttonResult.isHover ? PMod.sprites["Squadron_MoveButtonColorOn"].Sprite : PMod.sprites["Squadron_MoveButtonColor"].Sprite, rect.x + 4, rect.y + 26, flipX: true, color: color);
                 }
 
                 if (i != 19 && (PMod.kokoroApi == null || PMod.kokoroApi.IsEvadePossible(g.state, c, 1, ExternalAPIs.EvadeHookContext.Rendering)))
                 {
                     UIKey uIKey = new UIKey(SUK.btn_move_right, j);
-                    Rect rect = new Rect(x + 13, 111.0 + yOffset, 8.0, 11.0);
+                    Rect rect = new Rect(x + 11, 111.0 + yOffset, 8.0, 11.0);
                     UIKey key = uIKey;
                     OnMouseDown onMouseDown = c;
                     bool showAsPressed = !c.eyeballPeek && Input.GetGpHeld(Btn.TriggerR);
@@ -206,6 +213,7 @@ namespace APurpleApple.Shipyard.Patches
                     {
                         c.isHoveringMove = 2;
                     }
+                    Draw.Sprite(buttonResult2.isHover ? PMod.sprites["Squadron_MoveButtonColorOn"].Sprite : PMod.sprites["Squadron_MoveButtonColor"].Sprite, rect.x + 5, rect.y + 26, flipX: false, color: color);
                 }
             }
         }
@@ -393,6 +401,29 @@ namespace APurpleApple.Shipyard.Patches
 
                     break;
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(Character), nameof(Character.RenderCharacters)), HarmonyPrefix]
+        public static void MakePortraitsMini(G g, ref bool mini, ref bool finaleMode)
+        {
+            if (!finaleMode && g.state.characters.Count() > 3) mini = true;
+        }
+
+        [HarmonyPatch(typeof(Character), nameof(Character.Render)), HarmonyPostfix]
+        public static void MissingMiniPortraits(G g, int x, int y, bool mini, bool flipX, Character __instance)
+        {
+            if (g.state.route is not Combat) { return; }
+            if (g.state.CharacterIsMissing(__instance.deckType))
+            {
+                int index = (int)Mutil.Mod(Math.Floor(g.state.time * 12.0 + (double)x + (double)y), Character.noiseSprites.Count);
+                Spr? id = Character.noiseSprites[index];
+                Rect xy = g.Peek();
+                double x2 = xy.x + (double)(flipX ? 1 : 4) + (double)(mini ? (-1) : 0);
+                double y2 = xy.y + 1.0;
+                Color color = Colors.textMain;
+                Rect? pixelRect = (mini ? new Rect?(new Rect(0.0, 0.0, 29.0, 29.0)) : null);
+                Draw.Sprite(id, x2, y2, flipX: false, flipY: false, 0.0, null, null, null, pixelRect, color);
             }
         }
 
