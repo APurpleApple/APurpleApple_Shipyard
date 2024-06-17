@@ -414,7 +414,7 @@ namespace APurpleApple.Shipyard.Patches
         public static void MissingMiniPortraits(G g, int x, int y, bool mini, bool flipX, Character __instance)
         {
             if (g.state.route is not Combat) { return; }
-            if (g.state.CharacterIsMissing(__instance.deckType))
+            if (g.state.CharacterIsMissing(__instance.deckType) && mini)
             {
                 int index = (int)Mutil.Mod(Math.Floor(g.state.time * 12.0 + (double)x + (double)y), Character.noiseSprites.Count);
                 Spr? id = Character.noiseSprites[index];
