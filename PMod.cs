@@ -17,6 +17,7 @@ using Nanoray.EnumByNameSourceGenerator;
 using APurpleApple.Shipyard.Artifacts.Squadron;
 using APurpleApple.Shipyard.ExternalAPIs;
 using System.Reflection;
+using APurpleApple.Shipyard.Cards.EscapePod;
 
 namespace APurpleApple.Shipyard;
 
@@ -47,6 +48,7 @@ public sealed class PMod : SimpleMod
         typeof(CardAsteroidBay),
         typeof(CardAsteroidBlock),
         typeof(CardAsteroidDodge),
+        typeof(CardBasicRam)
     ];
 
     internal static IReadOnlyList<Type> Registered_Artifact_Types { get; } = [
@@ -102,9 +104,10 @@ public sealed class PMod : SimpleMod
         sprites.Add(key, Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("Sprites/" + fileName)));
     }
 
-    private void Patch()
+    Harmony harmony = new ("APurpleApple.Shipyard");
+
+    private void PatchAfterDB()
     {
-        Harmony harmony = new("APurpleApple.Shipyard");
         harmony.PatchAll();
 
         CustomTTGlossary.ApplyPatches(harmony);
@@ -130,6 +133,11 @@ public sealed class PMod : SimpleMod
         harmony.PatchVirtual(typeof(AAttack).GetMethod(nameof(AAttack.DoWeHaveCannonsThough)), Logger, postfix: postf);
     }
 
+    private void Patch()
+    {
+        harmony.Patch(typeof(State).GetMethod(nameof(State.PopulateRun)), postfix: typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.SetPilots)));
+    }
+
     public PMod(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
     {
         Instance = this;
@@ -147,18 +155,18 @@ public sealed class PMod : SimpleMod
         RegisterOuranos(package);
         RegisterAsteroidShip(package);
         RegisterSquadronShip(package);
-
+        RegisterEscapePodShip(package);
 
         foreach (var cardType in Registered_Card_Types)
             AccessTools.DeclaredMethod(cardType, nameof(IModCard.Register))?.Invoke(null, [helper]);
 
         foreach (var artifactType in Registered_Artifact_Types)
             AccessTools.DeclaredMethod(artifactType, nameof(IModArtifact.Register))?.Invoke(null, [helper]);
-
+        Patch();
         helper.Events.OnModLoadPhaseFinished += (object? sender, ModLoadPhase e) => {
             if (e == ModLoadPhase.AfterDbInit)
             {
-                Patch();
+                PatchAfterDB();
 
                 helper.ModRegistry.GetApi<IDraculaApi>("Shockah.Dracula")?.RegisterBloodTapOptionProvider(statuses["ElectricCharge"].Status, (_, _, status) => [
                     new AHurt { targetPlayer = true, hurtAmount = 1 },
@@ -168,7 +176,7 @@ public sealed class PMod : SimpleMod
 
                 if (kokoroApi != null)
                 {
-                    kokoroApi.RegisterEvadeHook(new SquadronKokoroEvadeHook(), int.MaxValue);
+                    kokoroApi.RegisterEvadeHook(new SquadronKokoroEvadeHook(), double.PositiveInfinity);
                 }
             }
         };
@@ -177,6 +185,50 @@ public sealed class PMod : SimpleMod
         cardActionLooksForType.Add(new Tuple<Type, PType>(typeof(ASpawn), PType.missiles));
     }
 
+    private void RegisterEscapePodShip(IPluginPackage<IModManifest> package)
+    {
+        RegisterSprite("EscapePod_Cockpit", "Parts/escapepod_cockpit.png", package);
+        RegisterSprite("EscapePod_Chassis", "Parts/escapepod_chassis.png", package);
+        RegisterSprite("CardRamm", "Cards/card_ramm.png", package);
+        RegisterSprite("ActionRamm", "Icons/hurtenemyicon.png", package);
+
+        parts.Add("EscapePod_Cockpit", Helper.Content.Ships.RegisterPart("EscapePod_Cockpit", new PartConfiguration()
+        {
+            Sprite = sprites["EscapePod_Cockpit"].Sprite,
+        }));
+
+        ships.Add("EscapePod", Helper.Content.Ships.RegisterShip("EscapePod", new ShipConfiguration()
+        {
+            Ship = new StarterShip()
+            {
+                ship = new Ship()
+                {
+                    hull = 6,
+                    hullMax = 6,
+                    shieldMaxBase = 3,
+                    parts =
+                    {
+                        new Part()
+                        {
+                            type = PType.cockpit,
+                            skin = parts["EscapePod_Cockpit"].UniqueName,
+                        },
+                    }
+                },
+                cards =
+                {
+                    new CardBasicRam(),
+                    new CardBasicRam(),
+                    new DodgeColorless(),
+                    new BasicShieldColorless(),
+                },
+            },
+            UnderChassisSprite = sprites["EscapePod_Chassis"].Sprite,
+
+            Name = this.AnyLocalizations.Bind(["ship", "EscapePod", "name"]).Localize,
+            Description = this.AnyLocalizations.Bind(["ship", "EscapePod", "description"]).Localize
+        }));
+    }
 
     private void RegisterSquadronShip(IPluginPackage<IModManifest> package)
     {

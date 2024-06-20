@@ -109,7 +109,7 @@ namespace APurpleApple.Shipyard.Patches
 
         
 
-        [HarmonyPatch(typeof(State), nameof(State.PopulateRun)), HarmonyPostfix]
+        //[HarmonyPatch(typeof(State), nameof(State.PopulateRun)), HarmonyPrefix, HarmonyPriority(0)]
         public static void SetPilots(State __instance, StarterShip shipTemplate)
         {
             if (__instance.ship.key == PMod.ships["Squadron"].UniqueName)
@@ -228,6 +228,14 @@ namespace APurpleApple.Shipyard.Patches
             if (key == "ReorganizeShip") { 
                 __result = false;
                 return; }
+        }
+
+        
+        [HarmonyPatch(typeof(ArtifactReward), nameof(ArtifactReward.GetBlockedArtifacts)), HarmonyPostfix]
+        public static void FilterOutArtifacts(State s, ref HashSet<Type> __result)
+        {
+            if (s.ship.key != PMod.ships["Squadron"].UniqueName) return;
+            __result.Add(typeof(TridimensionalCockpit));
         }
 
         [HarmonyPatch(typeof(Combat), nameof(Combat.DoEvade)), HarmonyPrefix]

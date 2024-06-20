@@ -62,6 +62,10 @@
       "name": "EJECT PART",
       "description": "Eject the hilighted part until the next turn for <c=damage>1</c> damage.",
       "description2": "Eject the hilighted part for 2 turns, dealing <c=damage>2</c> damage."
+    },
+    "Ramm": {
+      "name": "RAM",
+      "description": "Rapidly ram into the enemy ship, destroying any midrow object in your path."
     }
   },
   "ship": {
@@ -83,7 +87,11 @@
     },
     "Squadron": {
       "name": "Squadron",
-      "description": "You get a ship, you get a ship, everyone gets a ship !"
+      "description": "You get a ship, you get a ship, everyone gets a ship!"
+    },
+    "EscapePod": {
+      "name": "Escape Pod",
+      "description": "Good luck? \n<c=downside>Not meant to be balanced, play at your own risk</c>"
     }
   },
   "status": {
@@ -112,6 +120,9 @@
   "card": {
     "BasicCharge": {
       "name": "Basic Charge"
+    },
+    "BasicRam": {
+      "name": "Basic Ram"
     },
     "AsteroidShot": {
       "name": "Basic Shot"
