@@ -1,10 +1,6 @@
-﻿using APurpleApple.Shipyard.Parts;
-using APurpleApple.Shipyard.Patches;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+
+using APurpleApple.Shipyard.Squadron;
 
 namespace APurpleApple.Shipyard.ExternalAPIs
 {

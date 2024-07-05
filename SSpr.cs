@@ -1,4 +1,4 @@
-﻿using Nanoray.EnumByNameSourceGenerator;
+using Nanoray.EnumByNameSourceGenerator;
 using System;
 using System.Collections.Generic;
 using System.Linq;

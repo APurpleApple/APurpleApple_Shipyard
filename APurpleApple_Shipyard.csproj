@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <RootNamespace>APurpleApple.Shipyard</RootNamespace>
-        <Version>1.6.10</Version>
+        <Version>2.0.0</Version>
 		<IsLegacyMod>false</IsLegacyMod>
         <IncludedModProjectPaths>i18n;assets</IncludedModProjectPaths>
         <TargetFramework>net8.0</TargetFramework>
@@ -12,6 +12,11 @@
         <WarningsAsErrors>Nullable</WarningsAsErrors>
         <CheckEolTargetFramework>false</CheckEolTargetFramework>
     </PropertyGroup>
+  	<ItemGroup>
+		<Content Include="**/*.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
     <ItemGroup>
         <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" PrivateAssets="All" ExcludeAssets="All" />
         <PackageReference Include="Nickel.ModBuildConfig" Version="0.4.0-prerelease1" />
@@ -19,20 +24,108 @@
         <PackageReference Include="MakeTypesPublic" Version="1.0.3" PrivateAssets="All" ExcludeAssets="runtime" />
         <PackageReference Include="EnumByNameSourceGenerator" Version="1.1.1" PrivateAssets="All" ExcludeAssets="runtime" />
         <None Include="$(MSBuildProjectDirectory)\..\.editorconfig" Link=".editorconfig" />
+        <Compile Remove="bin\**" />
+        <Content Remove="bin\**" />
+        <EmbeddedResource Remove="bin\**" />
         <None Remove="$(MSBuildProjectDirectory)\.release\**" />
+				<None Remove="$(MSBuildProjectDirectory)\bin\**" />
+				<None Remove="bin\**" />
     </ItemGroup>
 	<ItemGroup>
-		<Content Include="Sprites\**">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
+	  <Content Include="Challenger\Sprites\Artifacts\Challenger.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Challenger\Sprites\Artifacts\ChampionBelt.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Challenger\Sprites\Artifacts\HighScore.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Challenger\Sprites\Artifacts\HighScoreLeft.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Challenger\Sprites\Artifacts\HighScoreRight.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Challenger\Sprites\Artifacts\Sweatband.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Challenger\Sprites\Parts\fist_cannon.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Challenger\Sprites\Parts\fist_chain.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Challenger\Sprites\Parts\fist_chain_segment.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Challenger\Sprites\Parts\fist_chassis.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Challenger\Sprites\Parts\fist_cockpit.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Challenger\Sprites\Parts\fist_fist.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Challenger\Sprites\Parts\fist_missile.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Challenger\Sprites\Parts\fist_wing.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="IronExpress\Sprites\Artifacts\IronExpress.png" />
+	  <Content Include="IronExpress\Sprites\Artifacts\IronExpressV2.png" />
+	  <Content Include="IronExpress\Sprites\Artifacts\MobiusTracks.png" />
+	  <Content Include="IronExpress\Sprites\Parts\rail_body.png" />
+	  <Content Include="IronExpress\Sprites\Parts\rail_cannon.png" />
+	  <Content Include="IronExpress\Sprites\Parts\rail_cockpit.png" />
+	  <Content Include="IronExpress\Sprites\Parts\rail_missile.png" />
+	  <Content Include="IronExpress\Sprites\Parts\rail_track.png" />
+	  <Content Include="IronExpress\Sprites\Parts\rail_trackend.png" />
+	  <Content Include="IronExpress\Sprites\Parts\rail_wagon.png" />
+	  <Content Include="IronExpress\Sprites\UI\ironexpress_rotate.png" />
+	  <Content Include="IronExpress\Sprites\UI\ironexpress_slide.png" />
+	  <Content Include="Ouranos\Sprites\Artifacts\LightningDrive.png" />
+	  <Content Include="Ouranos\Sprites\Artifacts\Ouranos.png" />
+	  <Content Include="Ouranos\Sprites\Artifacts\OuranosOff.png" />
+	  <Content Include="Ouranos\Sprites\Artifacts\OuranosV2.png" />
+	  <Content Include="Ouranos\Sprites\Artifacts\PowerSurge.png" />
+	  <Content Include="Ouranos\Sprites\Artifacts\StableDispersion.png" />
+	  <Content Include="Ouranos\Sprites\FX\RailgunCharge.png" />
+	  <Content Include="Ouranos\Sprites\Icons\electricChargeStatus.png" />
+	  <Content Include="Ouranos\Sprites\Icons\railgunChargeStatus.png" />
+	  <Content Include="Ouranos\Sprites\Parts\ouranos_cannon.png" />
+	  <Content Include="Ouranos\Sprites\Parts\ouranos_cannon_off.png" />
+	  <Content Include="Ouranos\Sprites\Parts\ouranos_cannon_v2_1.png" />
+	  <Content Include="Ouranos\Sprites\Parts\ouranos_cannon_v2_2.png" />
+	  <Content Include="Ouranos\Sprites\Parts\ouranos_cannon_v2_3.png" />
+	  <Content Include="Ouranos\Sprites\Parts\ouranos_chassis.png" />
+	  <Content Include="Ouranos\Sprites\Parts\ouranos_cockpit.png" />
+	  <Content Include="Ouranos\Sprites\Parts\ouranos_generator.png" />
+	  <Content Include="Ouranos\Sprites\Parts\ouranos_missile.png" />
+	  <Content Include="ShootingStar\Sprites\Artifacts\AsteroidArtifact.png" />
+	  <Content Include="ShootingStar\Sprites\Icons\tossPart.png" />
+	  <Content Include="ShootingStar\Sprites\Icons\tossPartFar.png" />
+	  <Content Include="ShootingStar\Sprites\Parts\asteroid_cannon.png" />
+	  <Content Include="ShootingStar\Sprites\Parts\asteroid_chassis.png" />
+	  <Content Include="ShootingStar\Sprites\Parts\asteroid_cockpit.png" />
+	  <Content Include="ShootingStar\Sprites\Parts\asteroid_comms.png" />
+	  <Content Include="ShootingStar\Sprites\Parts\asteroid_engine.png" />
+	  <Content Include="ShootingStar\Sprites\Parts\asteroid_missile.png" />
+	  <Content Include="ShootingStar\Sprites\Parts\asteroid_scaffolding.png" />
+	  <Content Include="Squadron\Sprites\Artifacts\Squadron.png" />
+	  <Content Include="Squadron\Sprites\Artifacts\Squadron4th.png" />
+	  <Content Include="Squadron\Sprites\Icons\crown.png" />
+	  <Content Include="Squadron\Sprites\Parts\squadron_color_decal.png" />
+	  <Content Include="Squadron\Sprites\Parts\squadron_fighter.png" />
+	  <Content Include="Squadron\Sprites\Parts\squadron_fighter_broken.png" />
+	  <Content Include="Squadron\Sprites\UI\squadron_move_right.png" />
+	  <Content Include="Squadron\Sprites\UI\squadron_move_right_color.png" />
+	  <Content Include="Squadron\Sprites\UI\squadron_move_right_color_on.png" />
+	  <Content Include="Squadron\Sprites\UI\squadron_move_right_on.png" />
 	</ItemGroup>
 	<ItemGroup>
-	  <None Remove="Sprites\Cards\card_ramm.png" />
-	  <None Remove="Sprites\Icons\hurtenemyicon.png" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Sprites\Artifacts\" />
-	  <Folder Include="Sprites\FX\" />
-	  <Folder Include="Sprites\Parts\" />
+	  <Folder Include="ShootingStar\Parts\" />
 	</ItemGroup>
 </Project>

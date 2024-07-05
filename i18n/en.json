@@ -48,13 +48,29 @@
       "name": "ASTEROID HULL",
       "description": "This ship's starting cards allows ejection of most of its parts.\n<c=downside>While a part is ejected, the relevant feature becomes unavailable. (Comms prevents from gaining shield, Engine prevents from moving)</c>"
     },
+    "OrbitalRecovery": {
+      "name": "ORBITAL RECOVERY",
+      "description": "Draw 1 whenever you recover a tossed part.</c>"
+    },
+    "MagnetizedParts": {
+      "name": "MAGNETIZED ROCKS",
+      "description": "The first Toss card you draw each turn gains retain until you play it or combat ends.</c>"
+    },
     "Squadron": {
       "name": "SQUADRON",
       "description": "Squad members can be moved individually.\nCards are only played by the relevant pilot, or by the <c=ffe93b>squad leader</c> if the pilot isn't present.\nThe <c=ffe93b>squad leader</c> is the last pilot to have moved or played a card. \n<c=downside>When a pilot takes damage, they go missing.</c>"
     },
+    "EvasiveAction": {
+      "name": "COORDINATED MANOEUVRE",
+      "description": "If you start your turn with no evade, gain 1."
+    },
     "Squadron4th": {
       "name": "THE MORE THE MERRIER",
       "description": "Gain 1 <c=status>ENERGY</c> every turn.\nOn pickup, adds a random 4th pilot to the squadron, along with their starting cards and artifacts."
+    },
+    "EscapePod": {
+      "name": "FRAGILE STRUCTURE",
+      "description": "<c=downside>Take 1 damage whenever a shot passes through one of your empty parts."
     }
   },
   "action": {
