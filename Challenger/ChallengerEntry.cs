@@ -30,10 +30,6 @@ namespace APurpleApple.Shipyard.Challenger
                     prefix: typeof(ChallengerPatches).GetMethod(nameof(ChallengerPatches.PreventCannonFx))
                 );
 
-            harmony.Patch(typeof(Ship).GetMethod(nameof(Ship.DrawTopLayer)),
-                    postfix: typeof(ChallengerPatches).GetMethod(nameof(ChallengerPatches.DrawStuff))
-                );
-
             harmony.PatchVirtual(typeof(AAttack).GetMethod(nameof(AAttack.Begin)),
                 prefix: new HarmonyMethod(typeof(ChallengerPatches).GetMethod(nameof(ChallengerPatches.ChampionBelt)))
                 );
@@ -55,6 +51,10 @@ namespace APurpleApple.Shipyard.Challenger
             {
                 Sprite = PMod.sprites[PSpr.Parts_fist_wing].Sprite
             }));
+            PMod.parts.Add("Fist_Fist", helper.Content.Ships.RegisterPart("Fist_Fist", new PartConfiguration()
+            {
+                Sprite = PMod.sprites[PSpr.Parts_fist_full].Sprite
+            }));
 
             PMod.ships.Add("Challenger", helper.Content.Ships.RegisterShip("Challenger", new ShipConfiguration()
             {
@@ -62,15 +62,15 @@ namespace APurpleApple.Shipyard.Challenger
                 {
                     ship = new Ship()
                     {
-                        hull = 12,
-                        hullMax = 13,
+                        hull = 14,
+                        hullMax = 15,
                         shieldMaxBase = 5,
                         parts =
                     {
                         new PartChallengerFist()
                         {
                             type = PType.cannon,
-                            skin = "",
+                            skin = PMod.parts["Fist_Fist"].UniqueName,
                             damageModifier = PDamMod.none,
                             key = "ChallengerFist"
                         },
@@ -78,7 +78,7 @@ namespace APurpleApple.Shipyard.Challenger
                         {
                             type = PType.wing,
                             skin = PMod.parts["Fist_Wing"].UniqueName,
-                            damageModifier = PDamMod.none
+                            damageModifier = PDamMod.armor
                         },
                         new Part()
                         {
@@ -95,7 +95,7 @@ namespace APurpleApple.Shipyard.Challenger
                         new PartChallengerFist()
                         {
                             type = PType.cannon,
-                            skin = "",
+                            skin = PMod.parts["Fist_Fist"].UniqueName,
                             damageModifier = PDamMod.none,
                             flip = true,
                             key = "ChallengerFist"

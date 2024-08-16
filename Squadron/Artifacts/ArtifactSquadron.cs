@@ -75,6 +75,8 @@ namespace APurpleApple.Shipyard.Squadron
 
             Status missingStatus;
             if (!StatusMeta.deckToMissingStatus.TryGetValue(unit.pilot.Value, out missingStatus)) return;
+            if (state.ship.Get(missingStatus) > 0) return;
+            
             combat.Queue(new AStatus() { status= missingStatus, statusAmount = 1, targetPlayer = true });
         }
 

@@ -76,7 +76,6 @@ namespace APurpleApple.Shipyard.ShootingStar
                     card.retainOverride = null;
                 }
             }
-            
         }
     }
 }

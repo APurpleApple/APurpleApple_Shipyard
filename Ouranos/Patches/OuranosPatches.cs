@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using APurpleApple.Shipyard.Ouranos.Parts;
 using FMOD;
 using FMOD.Studio;
 using HarmonyLib;
@@ -14,47 +15,39 @@ namespace APurpleApple.Shipyard.Ouranos
     internal static class OuranosPatches
     {
         //PatchVirtual [HarmonyPatch(typeof(AAttack), nameof(AAttack.Begin)), HarmonyPostfix]
-        public static void SpawnBeamEffect(AAttack __instance, G __0, State __1, Combat __2, bool __runOriginal)
+        public static void SpawnBeamEffect(G g, State s, Combat c, AAttack __instance)
         {
-            G g = __0;
-            State s = __1;
-            Combat c = __2;
-            if (__runOriginal && !__instance.fromDroneX.HasValue)
+            EnableCannonAfterAttack(s, c, __instance);
+        }
+
+        public static void EnableCannonAfterAttack(State s, Combat c, AAttack __instance)
+        {
+            ArtifactOuranosCannonV2? art = s.EnumerateAllArtifacts().Find((x) => x is ArtifactOuranosCannonV2) as ArtifactOuranosCannonV2;
+            if (art == null) return;
+            PartOuranosCannon? cannon = ArtifactOuranosCannon.GetCannon(s);
+            if (cannon != null)
             {
-                if (__instance.targetPlayer) { return; }
-
-                if (s.EnumerateAllArtifacts().Any((x)=> x is IOuranosCannon))
-                {
-                    if (__instance.damage > 0)
-                    {
-                        object[] param = { s, c };
-                        int? x = (int?)__instance.GetType().Method("GetFromX").Invoke(obj:__instance, parameters: param);
-
-                        if (x.HasValue && x == s.ship.parts.FindIndex((Part p) => p.type == PType.cannon && p.active))
-                        {
-                            EffectSpawnerExtension.RailgunBeam(c, s.ship.x + x.Value, __instance.damage, new Color("ff8866"));
-                        }
-                    }
-                }
+                //cannon.type = PType.cannon;
             }
         }
 
         //PatchVirtual [HarmonyPatch(typeof(AAttack), nameof(AAttack.Begin)), HarmonyPrefix]
-        public static bool StoreAttackInCannon(State __1, Combat __2, AAttack __instance)
+        public static void DisableCannonAndStoreAttack(State s, Combat c, AAttack __instance)
         {
-            State s = __1;
-            Combat c = __2;
-            if (!__instance.targetPlayer)
+            if (__instance.targetPlayer) return;
+
+            ArtifactOuranosCannonV2? art = s.EnumerateAllArtifacts().Find((x) => x is ArtifactOuranosCannonV2) as ArtifactOuranosCannonV2;
+            if (art == null) return;
+            PartOuranosCannon? cannon = ArtifactOuranosCannon.GetCannon(s);
+            if (cannon != null)
             {
-                Artifact? art = s.EnumerateAllArtifacts().Find((x) => x is ArtifactOuranosCannonV2);
-                ArtifactOuranosCannonV2? cv2 = art as ArtifactOuranosCannonV2;
-                if (cv2 != null && !cv2.allowAttacks)
-                {
-                    cv2.StoreAttack(s, c, __instance);
-                    return false;
-                }
+                //cannon.type = PType.special;
             }
-            return true;
+
+            if (__instance.fromDroneX.HasValue) return;
+            if (__instance.multiCannonVolley) return;
+
+            art.StoreAttack(s, c, __instance);
         }
 
         //[HarmonyPatch(typeof(Card), nameof(Card.GetActualDamage)),HarmonyPriority(0), HarmonyPostfix]
@@ -64,40 +57,13 @@ namespace APurpleApple.Shipyard.Ouranos
             {
                 if (!targetPlayer)
                 {
-                    Artifact? art = s.EnumerateAllArtifacts().Find((x) => x is ArtifactOuranosCannon);
-                    ArtifactOuranosCannon? cv2 = art as ArtifactOuranosCannon;
-                    if (cv2 != null && !cv2.isCannonActive)
+                    ArtifactOuranosCannon? art = s.EnumerateAllArtifacts().Find((x) => x is ArtifactOuranosCannon) as ArtifactOuranosCannon;
+                    if (art != null && !art.isCannonActive)
                     {
                         __result = 0;
                     }
                 }
             }
-        }
-
-        //[HarmonyPatch(typeof(Ship), nameof(Ship.DrawTopLayer)), HarmonyPostfix]
-        public static void DrawCannonPart(Ship __instance, G __0, Vec __1, Vec __2)
-        {
-            if (__instance.ai is FinaleFrienemy) return;
-
-            IOuranosCannon? cannon = __0.state.EnumerateAllArtifacts().Find((x) => x is IOuranosCannon) as IOuranosCannon;
-            if (cannon == null) return;
-
-            int partIndex = __instance.parts.FindIndex((Part p) => p.key == "Ouranos_Cannon");
-            if (partIndex < 0) return;
-
-            Part part = __instance.parts[partIndex];
-
-            Vec pos = __1 + __2 + new Vec((part.xLerped ?? ((double)partIndex)) * 16.0 -2, -32.0 + (__instance.isPlayerShip ? part.offset.y : (1.0 + (0.0 - part.offset.y))));
-            Vec vec4 = pos + new Vec(-1.0, -1.0 + (double)(__instance.isPlayerShip ? 6 : (-6)) * part.pulse).round();
-
-            Spr? id3 = cannon.CannonSprite;
-            double num11 = vec4.x + (id3 == PMod.sprites[PSpr.Parts_ouranos_cannon].Sprite ? 2 : 0);
-            double y7 = vec4.y;
-            bool flag = !__instance.isPlayerShip;
-            bool flip7 = part.flip;
-            bool flipY7 = flag;
-            Color? color2 = new Color(1.0, 1.0, 1.0, 1.0);
-            Draw.Sprite(id3, num11, y7, flip7, flipY7, 0.0, null, null, null, null, color2);
         }
     }
 }

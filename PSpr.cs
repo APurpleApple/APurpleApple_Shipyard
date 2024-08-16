@@ -12,6 +12,7 @@ public enum PSpr
 [SpritePath("Challenger/Sprites/Parts/fist_chassis.png")] Parts_fist_chassis,
 [SpritePath("Challenger/Sprites/Parts/fist_cockpit.png")] Parts_fist_cockpit,
 [SpritePath("Challenger/Sprites/Parts/fist_fist.png")] Parts_fist_fist,
+[SpritePath("Challenger/Sprites/Parts/fist_full.png")] Parts_fist_full,
 [SpritePath("Challenger/Sprites/Parts/fist_missile.png")] Parts_fist_missile,
 [SpritePath("Challenger/Sprites/Parts/fist_wing.png")] Parts_fist_wing,
 [SpritePath("EscapePod/Sprites/Artifacts/GrazedWing.png")] Artifacts_GrazedWing,

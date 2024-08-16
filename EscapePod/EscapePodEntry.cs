@@ -25,6 +25,11 @@ namespace APurpleApple.Shipyard.EscapePod
             typeof(ArmoredBay)
             ];
 
+        internal override List<string> DisabledEvents => [
+            "AddScaffold",
+            "ReorganizeShip"
+            ];
+
         public override void ApplyPatchesPostDB(Harmony harmony)
         {
             harmony.Patch(typeof(Ship).GetMethod(nameof(Ship.DrawBottomLayer)),
@@ -36,7 +41,7 @@ namespace APurpleApple.Shipyard.EscapePod
             );
 
             harmony.Patch(typeof(AAttack).GetMethod(nameof(AAttack.Begin)),
-                postfix: typeof(EscapePodPatches).GetMethod(nameof(EscapePodPatches.DamageOnEmptyPostfix))
+                prefix: typeof(EscapePodPatches).GetMethod(nameof(EscapePodPatches.DamageOnEmptyPrefix))
             );
         }
 

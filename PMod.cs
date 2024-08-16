@@ -47,10 +47,11 @@ public sealed class PMod : SimpleMod
     }
 
 
-    Harmony harmony = new ("APurpleApple.Shipyard");
+    public Harmony harmony = new ("APurpleApple.Shipyard");
 
     private void PatchAfterDB()
     {
+        
         //harmony.PatchAll();
         CustomTTGlossary.ApplyPatches(harmony);
 

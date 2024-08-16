@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using APurpleApple.Shipyard.Ouranos.Parts;
+using Microsoft.Xna.Framework.Input;
 using Nickel;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,17 @@ namespace APurpleApple.Shipyard.Ouranos;
 internal sealed class ArtifactOuranosCannon : Artifact, IModArtifact, IOuranosCannon
 {
     public int counter = 0;
+
+    public static void SetCannonSprite(Spr sprite, State s)
+    {
+        PartOuranosCannon? p = GetCannon(s);
+        if (p != null) p.sprite = sprite;
+    }
+    public static PartOuranosCannon? GetCannon(State s)
+    {
+        PartOuranosCannon? p = s.ship.parts.Find((x) => x is PartOuranosCannon) as PartOuranosCannon;
+        return p;
+    }
     public static void Register(IModHelper helper)
     {
         Type type = MethodBase.GetCurrentMethod()!.DeclaringType!;
@@ -31,19 +43,6 @@ internal sealed class ArtifactOuranosCannon : Artifact, IModArtifact, IOuranosCa
 
     public bool isCannonActive = true;
 
-    public Spr CannonSprite { get; set; }
-
-    public ArtifactOuranosCannon()
-    {
-        CannonSprite = PMod.sprites[PSpr.Parts_ouranos_cannon].Sprite;
-    }
-
-    public override void OnReceiveArtifact(State state)
-    {
-        Part? p = state.ship.parts.Find((x) => x.key == "Ouranos_Cannon");
-        if (p != null) p.skin = "";
-    }
-
     public override List<Tooltip>? GetExtraTooltips()
     {
         List<Tooltip> tooltips = new List<Tooltip>();
@@ -63,7 +62,7 @@ internal sealed class ArtifactOuranosCannon : Artifact, IModArtifact, IOuranosCa
     {
         isCannonActive = true;
 
-        CannonSprite = PMod.sprites[PSpr.Parts_ouranos_cannon].Sprite;
+        SetCannonSprite(PMod.sprites[PSpr.Parts_ouranos_cannon].Sprite, state);
 
         Pulse();
     }
@@ -82,7 +81,7 @@ internal sealed class ArtifactOuranosCannon : Artifact, IModArtifact, IOuranosCa
     {
         if (isCannonActive)
         {
-            CannonSprite = PMod.sprites[PSpr.Parts_ouranos_cannon_off].Sprite;
+            SetCannonSprite(PMod.sprites[PSpr.Parts_ouranos_cannon_off].Sprite, state);
             isCannonActive = false;
             Pulse();
         }

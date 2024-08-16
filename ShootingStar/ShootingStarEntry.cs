@@ -99,12 +99,12 @@ namespace APurpleApple.Shipyard.ShootingStar
                         shieldMaxBase = 4,
                         parts =
                     {
+
                         new Part()
                         {
-                            type = PType.cockpit,
-                            skin = PMod.parts["Asteroid_Cockpit"].UniqueName,
-                            damageModifier = PDamMod.none,
-                            key = "AsteroidCockpit"
+                            type = PType.comms,
+                            skin = PMod.parts["Asteroid_Comms"].UniqueName,
+                            key = "AsteroidComms"
                         },
                         new Part()
                         {
@@ -122,10 +122,10 @@ namespace APurpleApple.Shipyard.ShootingStar
                         },
                         new Part()
                         {
-                            type = PType.comms,
-                            skin = PMod.parts["Asteroid_Comms"].UniqueName,
-                            damageModifier = PDamMod.weak,
-                            key = "AsteroidComms"
+                            type = PType.cockpit,
+                            skin = PMod.parts["Asteroid_Cockpit"].UniqueName,
+                            damageModifier = PDamMod.none,
+                            key = "AsteroidCockpit"
                         },
                         new Part()
                         {
@@ -145,8 +145,8 @@ namespace APurpleApple.Shipyard.ShootingStar
                 },
                     artifacts =
                 {
-                    new ArtifactAsteroid(),
-                    new ShieldPrep()
+                    new ShieldPrep(),
+                    new ArtifactAsteroid()
                 }
                 },
                 ExclusiveArtifactTypes = ExclusiveArtifacts.ToFrozenSet(),

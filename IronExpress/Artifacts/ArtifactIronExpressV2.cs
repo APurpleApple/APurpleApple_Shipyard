@@ -39,5 +39,12 @@ namespace APurpleApple.Shipyard.IronExpress
         public void OnIronExpressSlide(Combat c, State s, PartRailCannon cannon)
         {
         }
+
+        public override List<Tooltip>? GetExtraTooltips()
+        {
+            List<Tooltip> tooltips = new List<Tooltip>();
+            tooltips.Add(new TTGlossary($"status.overdrive"));
+            return tooltips;
+        }
     }
 }

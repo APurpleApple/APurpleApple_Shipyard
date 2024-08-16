@@ -28,83 +28,6 @@ namespace APurpleApple.Shipyard.Squadron
             artifact.leader = leader;
         }
 
-        //[HarmonyPatch(typeof(Ship), nameof(Ship.DrawTopLayer)), HarmonyPostfix]
-        public static void DrawStuff(Ship __instance, G __0, Vec __1, Vec __2)
-        {
-            Vec worldPos = __2;
-            Vec v = __1;
-            G g = __0;
-
-            if (__instance.key == PMod.ships["Squadron"].UniqueName)
-            {
-                int j = 0;
-                if (g.state.IsOutsideRun())
-                {
-                    Deck[] pilots = g.state.runConfig.selectedChars.ToArray();
-
-                    for (int i = 0; i < __instance.parts.Count; i++)
-                    {
-                        Part part = __instance.parts[i];
-                        if (part is not PartSquadronUnit unit) continue;
-                        unit.pilot = pilots.Length > j ? pilots[j] : null;
-                        j++;
-                    }
-                }
-
-                Deck? leader = GetLeader(g.state);
-
-                j = 0;
-                for (int i = 0; i < __instance.parts.Count; i++)
-                {
-                    Part part = __instance.parts[i];
-
-                    if (part is not PartSquadronUnit unit) continue;
-                    double yOffset = j % 2 == 0 ? 9 : 0;
-
-                    bool isMissing = false;
-
-                    if (unit.pilot.HasValue)
-                    {
-
-                        Status missingStatus;
-                        if (StatusMeta.deckToMissingStatus.TryGetValue(unit.pilot.Value, out missingStatus))
-                        {
-                            if (__instance.Get(missingStatus) > 0)
-                            {
-                                isMissing = true;
-                            } 
-                        }
-                    }
-
-                    unit.yLerped = Mutil.MoveTowards(unit.yLerped, yOffset, g.dt * Math.Abs(unit.yLerped - yOffset) * 5);
-                    part.xLerped = Mutil.MoveTowards(part.xLerped ?? ((double)i), i, g.dt * Math.Max(Math.Abs((part.xLerped ?? (double)i) - i) -1, 0) * 10);
-                    j++;
-
-                    Vec partPos = worldPos + new Vec((part.xLerped ?? ((double)i)) * 16.0,unit.yLerped + -32.0 + (__instance.isPlayerShip ? part.offset.y : (1.0 + (0.0 - part.offset.y))));
-                    partPos += v;
-                    partPos += new Vec(-5.0, 3.0);
-
-                    Draw.Sprite(PMod.sprites[isMissing ? PSpr.Parts_squadron_fighter_broken : PSpr.Parts_squadron_fighter].Sprite, partPos.x, partPos.y, color: isMissing ? new Color(.75,.75,.75,1) : Colors.white);
-
-                    if (unit.pilot.HasValue)
-                    {
-                        Draw.Sprite(PMod.sprites[PSpr.Parts_squadron_color_decal].Sprite, partPos.x, partPos.y, color: DB.decks[unit.pilot.Value].color);
-                        if (g.state.route is Combat c)
-                        {
-                            Draw.Text(Character.GetDisplayName(unit.pilot.Value, g.state), partPos.x + 13, partPos.y + 10, color: DB.decks[unit.pilot.Value].color, outline: Colors.black, align: daisyowl.text.TAlign.Center);
-                                
-                        }
-                    }
-
-                    if (unit.pilot == leader)
-                    {
-                        Draw.Sprite(PMod.sprites[PSpr.Icons_crown].Sprite, partPos.x, partPos.y, color: Colors.white.fadeAlpha(Math.Abs(Math.Sin(g.time * 2))));
-                    }
-                }
-            }
-        }
-
-        
 
         //[HarmonyPatch(typeof(State), nameof(State.PopulateRun)), HarmonyPrefix, HarmonyPriority(0)]
         public static void SetPilots(State __instance, StarterShip shipTemplate)
@@ -315,7 +238,7 @@ namespace APurpleApple.Shipyard.Squadron
                 if (unit.pilot == art.leader)
                 {
                     int targetIndex = i + __instance.dir;
-                    
+
                     bool expand = targetIndex >= ship.parts.Count || targetIndex < 0;
 
                     if (expand)
@@ -383,14 +306,13 @@ namespace APurpleApple.Shipyard.Squadron
                             }
                         }
                     }
-
                     break;
                 }
             }
         }
 
         //[HarmonyPatch(typeof(Character), nameof(Character.RenderCharacters)), HarmonyPrefix]
-        public static void MakePortraitsMini(G g, ref bool mini, ref bool finaleMode)
+        public static void MakePortraitsMini(G g, ref bool mini, bool finaleMode)
         {
             if (!finaleMode && g.state.characters.Count() > 3) mini = true;
         }

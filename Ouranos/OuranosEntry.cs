@@ -1,4 +1,6 @@
-﻿using HarmonyLib;
+﻿using APurpleApple.Shipyard.Ouranos.Parts;
+using APurpleApple.Shipyard.Shared;
+using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
 using System;
@@ -31,12 +33,8 @@ namespace APurpleApple.Shipyard.Ouranos
                 );
 
             harmony.PatchVirtual(typeof(AAttack).GetMethod(nameof(AAttack.Begin)),
-                prefix: new HarmonyMethod(typeof(OuranosPatches).GetMethod(nameof(OuranosPatches.StoreAttackInCannon))),
+                prefix: new HarmonyMethod(typeof(OuranosPatches).GetMethod(nameof(OuranosPatches.DisableCannonAndStoreAttack))),
                 postfix: new HarmonyMethod(typeof(OuranosPatches).GetMethod(nameof(OuranosPatches.SpawnBeamEffect)))
-                );
-
-            harmony.Patch(typeof(Ship).GetMethod(nameof(Ship.DrawTopLayer)),
-                    postfix: typeof(OuranosPatches).GetMethod(nameof(OuranosPatches.DrawCannonPart))
                 );
 
             harmony.Patch(typeof(Card).GetMethod(nameof(Card.GetActualDamage)),
@@ -124,8 +122,9 @@ namespace APurpleApple.Shipyard.Ouranos
                             skin = PMod.parts["Ouranos_Generator"].UniqueName,
                             damageModifier = PDamMod.weak
                         },
-                        new Part()
+                        new PartOuranosCannon()
                         {
+                            RenderDepth = 2,
                             type = PType.cannon,
                             skin = PMod.parts["Ouranos_Cannon"].UniqueName,
                             damageModifier = PDamMod.none,
@@ -149,8 +148,8 @@ namespace APurpleApple.Shipyard.Ouranos
                 },
                     artifacts =
                 {
-                    new ArtifactOuranosCannon(),
-                    new ShieldPrep()
+                    new ShieldPrep(),
+                    new ArtifactOuranosCannon()
                 }
                 },
                 ExclusiveArtifactTypes = ExclusiveArtifacts.ToFrozenSet(),

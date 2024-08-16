@@ -10,8 +10,8 @@ namespace APurpleApple.Shipyard.EscapePod
     [HarmonyPatch]
     internal static class EscapePodPatches
     {
-        //[HarmonyPatch(typeof(AAttack), nameof(AAttack.Begin)), HarmonyPostfix]
-        public static void DamageOnEmptyPostfix(AAttack __instance, G g, State s, Combat c)
+        //[HarmonyPatch(typeof(AAttack), nameof(AAttack.Begin)), HarmonyPrefix]
+        public static void DamageOnEmptyPrefix(AAttack __instance, G g, State s, Combat c)
         {
             if (!__instance.targetPlayer) return;
             if (!s.EnumerateAllArtifacts().Any(a=>a is ArtifactEscapePod)) return;

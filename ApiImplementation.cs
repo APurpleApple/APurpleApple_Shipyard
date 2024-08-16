@@ -21,7 +21,7 @@ namespace APurpleApple.Shipyard
 
         public void RegisterActionLooksForPartType(Type actionType, PType partType)
         {
-            SquadronEntry.cardActionLooksForType.Add(new Tuple<Type, PType>(actionType, partType));
+            SquadronEntry.AddCardActionLooksForType(new Tuple<Type, PType>(actionType, partType));
         }
     }
 }

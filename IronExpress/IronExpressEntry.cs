@@ -124,8 +124,8 @@ namespace APurpleApple.Shipyard.IronExpress
                 },
                     artifacts =
                 {
-                    new ArtifactIronExpress(),
-                    new ShieldPrep()
+                    new ShieldPrep(),
+                    new ArtifactIronExpress()
                 }
                 },
                 ExclusiveArtifactTypes = ExclusiveArtifacts.ToFrozenSet(),

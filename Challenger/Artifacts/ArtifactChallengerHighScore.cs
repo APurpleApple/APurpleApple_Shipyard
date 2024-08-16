@@ -83,43 +83,16 @@ namespace APurpleApple.Shipyard.Challenger
         public override List<Tooltip>? GetExtraTooltips()
         {
             List<Tooltip> tooltips = new List<Tooltip>();
-             
-            if (highscore >= 5)
-            {
-                tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips","Highscore","5"])));
-            }
-            if (highscore >= 10)
-            {
-                tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "10"])));
-            }
-            if (highscore >= 20)
-            {
-                tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "20"])));
-            }
-            if (highscore >= 35)
-            {
-                tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "35"])));
-            }
-            if (highscore >= 50)
-            {
-                tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "50"])));
-            }
-            if (highscore >= 100)
-            {
-                tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "100"])));
-            }
-            if (highscore >= 250)
-            {
-                tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "250"])));
-            }
-            if (highscore >= 500)
-            {
-                tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "500"])));
-            }
-            if (highscore >= 999)
-            {
-                tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "999"])));
-            }
+
+            tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "5"])));
+            tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "10"])));
+            tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "20"])));
+            tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "35"])));
+            tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "50"])));
+            tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "100"])));
+            tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "250"])));
+            tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "500"])));
+            tooltips.Add(new TTText(PMod.Instance.Localizations.Localize(["tooltips", "Highscore", "999"])));
 
             return tooltips;
         }

@@ -28,7 +28,7 @@ namespace APurpleApple.Shipyard.Ouranos
                 c.QueueImmediate(new AStatus() { status = PMod.statuses["ElectricCharge"].Status, statusAmount = -1, targetPlayer = __instance.isPlayerShip });
             }
         }
-
+        
         //PatchVirtual [HarmonyPatch(typeof(AAttack), nameof(AAttack.Begin)), HarmonyPostfix]
         public static void RemoveElectricCharge(AAttack __instance, G __0, State __1, Combat __2, bool __runOriginal)
         {

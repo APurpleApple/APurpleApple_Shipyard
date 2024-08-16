@@ -62,5 +62,12 @@ namespace APurpleApple.Shipyard.IronExpress
                 c.Queue(new AIronExpressCannonSlide() { direction = direction });
             }
         }
+
+        public override List<Tooltip>? GetExtraTooltips()
+        {
+            List<Tooltip> tooltips = new List<Tooltip>();
+            tooltips.Add(new TTGlossary($"status.shield", 2));
+            return tooltips;
+        }
     }
 }

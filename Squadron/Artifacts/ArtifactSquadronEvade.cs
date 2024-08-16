@@ -35,5 +35,12 @@ namespace APurpleApple.Shipyard.Squadron
                 combat.Queue(new AStatus() { status = Status.evade, targetPlayer = true, statusAmount = 1 });
             }
         }
+
+        public override List<Tooltip>? GetExtraTooltips()
+        {
+            List<Tooltip> tooltips = new List<Tooltip>();
+            tooltips.Add(new TTGlossary($"status.evade"));
+            return tooltips;
+        }
     }
 }

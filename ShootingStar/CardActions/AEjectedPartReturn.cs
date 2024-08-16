@@ -20,7 +20,7 @@ namespace APurpleApple.Shipyard.ShootingStar
             Artifact? art = s.EnumerateAllArtifacts().FirstOrDefault(a => a is ArtifactAsteroidDrawBoss);
             if (art != null)
             {
-                c.QueueImmediate(new ADrawCard() { count = 1, artifactPulse = art.Key()});
+                c.QueueImmediate(new ADrawCard() { count = 2, artifactPulse = art.Key()});
             }
         }
     }

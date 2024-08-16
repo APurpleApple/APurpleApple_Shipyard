@@ -8,6 +8,5 @@ namespace APurpleApple.Shipyard.Ouranos
 {
     internal interface IOuranosCannon
     {
-        public Spr CannonSprite { get; set; }
     }
 }

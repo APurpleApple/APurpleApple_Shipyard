@@ -26,7 +26,7 @@
     },
     "HighScore": {
       "name": "HIGH SCORE",
-      "description": "Playing alternating cards from the left and right of your hand gives you a stacking <c=status>HIGH SCORE</c> bonus, that resets when playing 2 cards from the same side in a row."
+      "description": "Playing alternating cards from the <c=card>left and right of your hand</c> gives you a stacking <c=status>HIGH SCORE</c> bonus, that resets when playing 2 cards from the same side in a row."
     },
     "Ouranos": {
       "name": "OURANOS RAILGUN",
@@ -50,7 +50,7 @@
     },
     "OrbitalRecovery": {
       "name": "ORBITAL RECOVERY",
-      "description": "Draw 1 whenever you recover a tossed part.</c>"
+      "description": "Draw 2 whenever you recover a tossed part.</c>"
     },
     "MagnetizedParts": {
       "name": "MAGNETIZED ROCKS",
@@ -62,7 +62,7 @@
     },
     "EvasiveAction": {
       "name": "COORDINATED MANOEUVRE",
-      "description": "If you start your turn with no evade, gain 1."
+      "description": "If you start your turn with no <c=status>EVADE</c>, gain 1."
     },
     "Squadron4th": {
       "name": "THE MORE THE MERRIER",
@@ -81,7 +81,7 @@
     },
     "Ramm": {
       "name": "RAM",
-      "description": "Rapidly ram into the enemy ship, destroying any midrow object in your path."
+      "description": "Ram into the enemy ship, destroying any <c=midrow>midrow object</c> in your path and dealing {0} to every part hit."
     }
   },
   "ship": {
