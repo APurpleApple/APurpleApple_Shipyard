@@ -12,42 +12,62 @@ namespace APurpleApple.Shipyard.Challenger
     internal static class ChallengerPatches
     {
         //[HarmonyPatch(typeof(EffectSpawner), nameof(EffectSpawner.Cannon)), HarmonyPrefix]
-        public static bool PreventCannonFx(G __0, bool __1, RaycastResult __2, DamageDone __3)
+        public static bool PreventCannonFx(G g, bool targetPlayer, RaycastResult ray, DamageDone dmg)
         {
-            if (!__1 && __0.state.ship.key == PMod.ships["Challenger"].UniqueName)
+            if (targetPlayer) return true;
+            Part? part = g.state.ship.GetPartAtWorldX(ray.worldX);
+            if (part == null) return true;
+            if (part is PartChallengerFist)
             {
-                if (__2.hitShip || __2.hitDrone)
+                if (ray.hitShip || ray.hitDrone)
                 {
-                    EffectSpawner.NonCannonHit(__0, __1, __2, __3);
+                    EffectSpawner.NonCannonHit(g, targetPlayer, ray, dmg);
                 }
                 return false;
             }
             return true;
         }
 
+
+
         //[HarmonyPatch(typeof(Card), nameof(Card.GetAllTooltips)), HarmonyPostfix]
         public static void RemovePartHighlight(Card __instance, G __0, State __1)
         {
             if (__1.route is Combat c)
             {
+                bool hilight = false;
+
                 int handCount = c.hand.Count;
                 int handPosition = c.hand.FindIndex((x) => x == __instance);
-                foreach (Part p in __1.ship.parts)
+
+                IEnumerable<PartChallengerFist> fists = __1.ship.parts.Where(x=>x is PartChallengerFist).Cast<PartChallengerFist>();
+
+                foreach (PartChallengerFist fist in fists)
                 {
-                    if (p.key == "ChallengerFist")
+                    if (fist.hilight)
+                    {
+                        hilight = true;
+                        break;
+                    }
+                }
+
+                if (hilight)
+                {
+                    foreach (PartChallengerFist fist in fists)
                     {
                         if (handCount % 2 == 1 && handPosition == handCount / 2)
                         {
+                            fist.hilight = true;
                         }
                         else
                         {
                             if (handPosition < handCount / 2)
                             {
-                                p.hilight = p.hilight & !p.flip;
+                                fist.hilight = !fist.flip;
                             }
                             else
                             {
-                                p.hilight = p.hilight & p.flip;
+                                fist.hilight = fist.flip;
                             }
                         }
                     }
@@ -56,6 +76,24 @@ namespace APurpleApple.Shipyard.Challenger
         }
 
         //PatchVirtual [HarmonyPatch(typeof(AAttack), nameof(AAttack.Begin)), HarmonyPrefix]
+        public static void AAttackBegin_Prefixes(G g, State s, Combat c, AAttack __instance)
+        {
+            AddAttackMovement(g, s, c, __instance);
+            ChampionBelt(s, c, __instance);
+        }
+
+        public static void AddAttackMovement(G g, State s, Combat c, AAttack __instance)
+        {
+            if (__instance.targetPlayer) return;
+            if (__instance.fromDroneX.HasValue) return;
+            Part? part = g.state.ship.GetPartAtLocalX(__instance.GetFromX(s, c) ?? -1);
+            if (part == null) return;
+            if (part is PartChallengerFist)
+            {
+                __instance.moveEnemy = part.flip ? -1 : 1;
+            }
+        }
+
         public static void ChampionBelt(State __1, Combat __2, AAttack __instance)
         {
             if (__1.ship.key != PMod.ships["Challenger"].UniqueName) return;

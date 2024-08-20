@@ -10,8 +10,6 @@ namespace APurpleApple.Shipyard.Challenger
 {
     public class ArtifactChallenger : Artifact, IModArtifact
     {
-        public int fistMovement = 0;
-
         public static void Register(IModHelper helper)
         {
             Type type = MethodBase.GetCurrentMethod()!.DeclaringType!;
@@ -43,48 +41,23 @@ namespace APurpleApple.Shipyard.Challenger
                 {
                     if (handCount % 2 == 1 && handPosition == handCount / 2)
                     {
-                        fistMovement = 0;
                         p.active = true;
                     }
                     else
                     {
                         if (handPosition < handCount / 2)
                         {
-                            fistMovement = 1;
                             p.active = !p.flip;
                         }
                         else
                         {
-                            fistMovement = -1;
                             p.active = p.flip;
                         }
                     }
                 }
             }
-
-            combat.Queue(new AChallengerResetPartsActive());
+            //combat.Queue(new AChallengerResetPartsActive());
         }
 
-        public override void OnEnemyGetHit(State state, Combat combat, Part? part)
-        {
-            if (fistMovement != 0)
-            {
-                if (combat.currentCardAction == null) return;
-                if (combat.currentCardAction is not AAttack attack) return;
-                if (attack.fromDroneX.HasValue) return;
-                attack.timer = 0.0;
-                combat.QueueImmediate(new AMove() { dir = fistMovement, targetPlayer = false });
-                for (int i = 0; i < combat.cardActions.Count; i++)
-                {
-                    if (combat.cardActions[i] is AStunPart a)
-                    {
-                        combat.cardActions.Remove(a);
-                        a.timer = 0.0;
-                        combat.cardActions.Insert(0, a);
-                        break;
-                    }
-                }
-            }
-        }
     }
 }

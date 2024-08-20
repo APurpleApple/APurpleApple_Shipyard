@@ -67,6 +67,7 @@ namespace APurpleApple.Shipyard.Challenger
 
         public override int ModifyBaseDamage(int baseDamage, Card? card, State state, Combat? combat, bool fromPlayer)
         {
+            if (!fromPlayer) return 0;
             int mod = 0;
             if (highscore >= 35) mod++;
             if (highscore >= 100) mod++;

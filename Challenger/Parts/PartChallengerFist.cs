@@ -14,11 +14,11 @@ namespace APurpleApple.Shipyard.Challenger
         public int yTarget = 0;
 
         public bool IsTemporary { get; set; } = false;
-        public bool DoVanillaRender(Ship ship, int localX, G g) => true;
+        public bool DoVanillaRender(Ship ship, int localX, G g) => !active;
 
         public void Render(Ship ship, int localX, G g, Vec v, Vec worldPos)
         {
-            xLerped = Mutil.MoveTowards(xLerped ?? ((double)localX), localX, g.dt * 10);
+            if (!active) return;
             Vec partPos = worldPos + new Vec((xLerped ?? ((double)localX)) * 16.0, -32.0 + (ship.isPlayerShip ? offset.y : (1.0 + (0.0 - offset.y))));
             partPos += v;
             partPos += new Vec(-1.0, -1.0);
@@ -35,8 +35,6 @@ namespace APurpleApple.Shipyard.Challenger
             double curveOffset = GetCurveOffset(pulse, flipX);
 
             double fistX = double.Lerp(x, xTarget * 16.0 + v.x, pulse);
-
-            //Draw.Sprite(PMod.sprites["Fist_Chain"].Sprite, num11 + 4 + curveOffset, u + 27, flip7, flipY7, 0, null, null, new Vec(1,distance/19), null, color2);
 
             double segments = 4;
             double segmentsLength = pulse / segments;

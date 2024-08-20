@@ -63,7 +63,7 @@ namespace APurpleApple.Shipyard.Squadron
         public override void ApplyPatches(Harmony harmony)
         {
             harmony.Patch(typeof(State).GetMethod(nameof(State.PopulateRun)), 
-                postfix: typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.SetPilots)));
+                postfix: typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.SetPilotsOnRunStart)));
         }
 
         public override void ApplyPatchesPostDB(Harmony harmony)
@@ -91,6 +91,17 @@ namespace APurpleApple.Shipyard.Squadron
             harmony.Patch(typeof(AAttack).GetMethod(nameof(AAttack.ApplyAutododge)),
                 prefix: typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.AutododgeFix))
             );
+
+            harmony.Patch(typeof(AAddCharacter).GetMethod(nameof(AAddCharacter.Begin)),
+                postfix: typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.OnCharacterChanged)),
+                prefix: typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.AllowMoreThanThree))
+            );
+
+
+            harmony.Patch(typeof(ARemoveCharacter).GetMethod(nameof(ARemoveCharacter.Begin)),
+                postfix: typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.OnCharacterChanged))
+            );
+
 
             harmony.Patch(typeof(Combat).GetMethod(nameof(Combat.DoEvade)),
                 prefix: typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.SetLeaderOnMove))

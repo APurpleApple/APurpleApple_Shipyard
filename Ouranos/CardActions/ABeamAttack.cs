@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,7 @@ namespace APurpleApple.Shipyard.Ouranos
                 item.multiCannonVolley = true;
                 item.fromX = fromX;
                 item.Begin(g,s,c);
+                Console.WriteLine($"shot {item.damage}");
             }
             EffectSpawnerExtension.RailgunBeam(c, s.ship.x + fromX!.Value, damage, new Color("ff8866")) ;
         }

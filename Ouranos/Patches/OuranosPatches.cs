@@ -47,6 +47,7 @@ namespace APurpleApple.Shipyard.Ouranos
             if (__instance.fromDroneX.HasValue) return;
             if (__instance.multiCannonVolley) return;
 
+            if (__instance is ABeamAttack) return;
             art.StoreAttack(s, c, __instance);
         }
 
