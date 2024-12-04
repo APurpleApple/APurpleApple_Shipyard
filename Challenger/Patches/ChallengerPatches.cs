@@ -50,7 +50,6 @@ namespace APurpleApple.Shipyard.Challenger
                         break;
                     }
                 }
-
                 if (hilight)
                 {
                     foreach (PartChallengerFist fist in fists)

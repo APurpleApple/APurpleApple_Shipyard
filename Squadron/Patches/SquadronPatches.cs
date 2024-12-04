@@ -298,6 +298,10 @@ namespace APurpleApple.Shipyard.Squadron
             ArtifactSquadron? art = s.EnumerateAllArtifacts().Find((x) => x is ArtifactSquadron) as ArtifactSquadron;
             if (art == null) return;
             s.ship.x -= __instance.dir;
+            if (__instance.isTeleport)
+            {
+                s.ship.xLerped -= __instance.dir;
+            }
             
             for (int i = 0; i < ship.parts.Count; i++)
             {
@@ -375,6 +379,12 @@ namespace APurpleApple.Shipyard.Squadron
                             }
                         }
                     }
+
+                    if (__instance.isTeleport)
+                    {
+                        unit.xLerped += __instance.dir;
+                    }
+
                     break;
                 }
             }

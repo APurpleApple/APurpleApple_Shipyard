@@ -1,6 +1,6 @@
 {
   "UniqueName": "APurpleApple.Shipyard",
-  "Version": "2.0.2",
+  "Version": "2.0.5",
   "RequiredApiVersion": "0.1.0",
   "EntryPointAssembly": "APurpleApple_Shipyard.dll",
 
@@ -15,7 +15,7 @@
   "Dependencies": [
     {
       "UniqueName": "APurpleApple.ShipPartExpansion",
-      "Version": "0.1.0"
+      "Version": "0.2.0"
     }
   ]
 }

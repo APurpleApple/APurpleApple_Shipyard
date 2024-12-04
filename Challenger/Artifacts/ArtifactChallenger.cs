@@ -35,24 +35,21 @@ namespace APurpleApple.Shipyard.Challenger
                 // combat.Queue(new AStatus() { targetPlayer = true, status = Status.heat, statusAmount = 1 });
             }
 
-            foreach (Part p in state.ship.parts)
+            foreach (PartChallengerFist p in state.ship.parts.Where(x => x is PartChallengerFist))
             {
-                if (p.key == "ChallengerFist")
+                if (handCount % 2 == 1 && handPosition == handCount / 2)
                 {
-                    if (handCount % 2 == 1 && handPosition == handCount / 2)
+                    p.active = true;
+                }
+                else
+                {
+                    if (handPosition < handCount / 2)
                     {
-                        p.active = true;
+                        p.active = !p.flip;
                     }
                     else
                     {
-                        if (handPosition < handCount / 2)
-                        {
-                            p.active = !p.flip;
-                        }
-                        else
-                        {
-                            p.active = p.flip;
-                        }
+                        p.active = p.flip;
                     }
                 }
             }
