@@ -31,7 +31,7 @@ namespace APurpleApple.Shipyard.Challenger
                 );
 
             harmony.PatchVirtual(typeof(AAttack).GetMethod(nameof(AAttack.Begin)),
-                prefix: new HarmonyMethod(typeof(ChallengerPatches).GetMethod(nameof(ChallengerPatches.ChampionBelt)))
+                prefix: new HarmonyMethod(typeof(ChallengerPatches).GetMethod(nameof(ChallengerPatches.AAttackBegin_Prefixes)))
                 );
         }
 
@@ -53,7 +53,8 @@ namespace APurpleApple.Shipyard.Challenger
             }));
             PMod.parts.Add("Fist_Fist", helper.Content.Ships.RegisterPart("Fist_Fist", new PartConfiguration()
             {
-                Sprite = PMod.sprites[PSpr.Parts_fist_full].Sprite
+                Sprite = PMod.sprites[PSpr.Parts_fist_full].Sprite,
+                DisabledSprite = PMod.sprites[PSpr.Parts_fist_full_off].Sprite,
             }));
 
             PMod.ships.Add("Challenger", helper.Content.Ships.RegisterShip("Challenger", new ShipConfiguration()

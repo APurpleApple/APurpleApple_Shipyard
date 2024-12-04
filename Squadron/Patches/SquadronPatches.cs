@@ -29,32 +29,51 @@ namespace APurpleApple.Shipyard.Squadron
             artifact.leader = leader;
         }
 
-
-        //[HarmonyPatch(typeof(State), nameof(State.PopulateRun)), HarmonyPrefix, HarmonyPriority(0)]
-        public static void SetPilots(State __instance, StarterShip shipTemplate)
+        public static void RefreshPilots(State s, IEnumerable<Deck> characters)
         {
-            if (__instance.ship.key == PMod.ships["Squadron"].UniqueName)
+            foreach (PartSquadronUnit part in s.ship.parts.Where((p) => p is PartSquadronUnit))
             {
-                foreach (PartSquadronUnit part in __instance.ship.parts.Where((p)=> p is PartSquadronUnit))
-                {
-                    part.pilot = null;
-                }
+                part.pilot = null;
+            }
 
-                foreach (Deck deck in __instance.runConfig.selectedChars)
+            foreach (Deck deck in characters)
+            {
+                SetLeader(s, deck);
+                foreach (Part part in s.ship.parts)
                 {
-                    SetLeader(__instance, deck);
-                    foreach (Part part in __instance.ship.parts)
+                    if (part is PartSquadronUnit squadronUnit)
                     {
-                        if (part is PartSquadronUnit squadronUnit)
+                        if (!squadronUnit.pilot.HasValue)
                         {
-                            if (!squadronUnit.pilot.HasValue)
-                            {
-                                squadronUnit.pilot = deck;
-                                break;
-                            }
+                            squadronUnit.pilot = deck;
+                            break;
                         }
                     }
                 }
+            }
+        }
+
+        //[HarmonyPatch(typeof(AAddCharacter), nameof(AAddCharacter.Begin)), HarmonyPrefix]
+        public static void AllowMoreThanThree(G g, State s, Combat c, AAddCharacter __instance)
+        {
+            if (s.ship.key == PMod.ships["Squadron"].UniqueName)
+            {
+                __instance.canGoPastTheCharacterLimit = true;
+            }
+        }
+
+        //[HarmonyPatch(typeof(AAddCharacter), nameof(AAddCharacter.Begin)), HarmonyPostfix]
+        public static void OnCharacterChanged(G g, State s, Combat c)
+        {
+            RefreshPilots(s, s.characters.Select<Character, Deck>(ch=>ch.deckType ?? Deck.colorless));
+        }
+
+        //[HarmonyPatch(typeof(State), nameof(State.PopulateRun)), HarmonyPrefix, HarmonyPriority(0)]
+        public static void SetPilotsOnRunStart(State __instance, StarterShip shipTemplate)
+        {
+            if (__instance.ship.key == PMod.ships["Squadron"].UniqueName)
+            {
+                RefreshPilots(__instance, __instance.runConfig.selectedChars);
              }
         }
 

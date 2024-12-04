@@ -72,6 +72,7 @@ namespace APurpleApple.Shipyard.Squadron
             if (part == null) return;
             if (part is not PartSquadronUnit unit) return;
             if (!unit.pilot.HasValue) return;
+            SquadronPatches.SetLeader(state, unit.pilot);
 
             Status missingStatus;
             if (!StatusMeta.deckToMissingStatus.TryGetValue(unit.pilot.Value, out missingStatus)) return;

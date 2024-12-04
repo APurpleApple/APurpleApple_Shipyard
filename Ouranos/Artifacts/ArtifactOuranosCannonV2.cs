@@ -65,6 +65,7 @@ namespace APurpleApple.Shipyard.Ouranos
         public void StoreAttack(State state, Combat combat, AAttack attack)
         {
             storedAttacks.Add(attack);
+            Console.WriteLine($"stored {attack.damage}");
             Pulse();
             combat.QueueImmediate(new AStatus() { targetPlayer = true, status = PMod.statuses["ElectricCharge"].Status, statusAmount = -1, timer = .1 });
             combat.QueueImmediate(new AStatus() { targetPlayer = true, status = PMod.statuses["RailgunCharge"].Status, statusAmount = attack.damage, timer = .1 });

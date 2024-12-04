@@ -14,7 +14,7 @@
     },
     "Challenger": {
       "name": "CHALLENGER",
-      "description": "Attack cards played from the <c=card>left side of your hand</c> fire from the left fist and push the enemy to the right. The opposite is true for the right fist. Attacks from a card in <c=card>the center of your hand</c> are fired by both."
+      "description": "Cards played from the <c=card>left side of your hand</c> immediately activate the left fist.\nAttacks fired from the left fist push the enemy to the right.\nThe opposite is true for the right fist.\nAttacks from a card in <c=card>the center of your hand</c> activate both."
     },
     "ChampionBelt": {
       "name": "FLEXIBLE JOINTS",
@@ -58,7 +58,7 @@
     },
     "Squadron": {
       "name": "SQUADRON",
-      "description": "Squad members can be moved individually.\nCards are only played by the relevant pilot, or by the <c=ffe93b>squad leader</c> if the pilot isn't present.\nThe <c=ffe93b>squad leader</c> is the last pilot to have moved or played a card. \n<c=downside>When a pilot takes damage, they go missing.</c>"
+      "description": "Squad members can be moved individually.\nCards are only played by the relevant pilot, or by the <c=ffe93b>squad leader</c> if the pilot isn't present.\nThe <c=ffe93b>squad leader</c> is the last pilot to have moved, taken damage, or played a card. \n<c=downside>When a pilot takes damage, they go missing.</c>"
     },
     "EvasiveAction": {
       "name": "COORDINATED MANOEUVRE",
