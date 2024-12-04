@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
+      <TargetFramework>net8.0</TargetFramework>
         <RootNamespace>APurpleApple.Shipyard</RootNamespace>
         <Version>2.0.1</Version>
 		<IsLegacyMod>false</IsLegacyMod>
         <IncludedModProjectPaths>i18n;assets</IncludedModProjectPaths>
-        <TargetFramework>net8.0</TargetFramework>
         <ModZipPath>$(MSBuildProjectDirectory)\.release\$(MSBuildProjectName)-$(Version).zip</ModZipPath>
         <LangVersion>12.0</LangVersion>
         <ImplicitUsings>disable</ImplicitUsings>

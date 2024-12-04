@@ -15,6 +15,7 @@ using APurpleApple.Shipyard.Ouranos;
 using APurpleApple.Shipyard.Shared;
 using APurpleApple.Shipyard.IronExpress;
 using APurpleApple.Shipyard.EscapePod;
+using Shockah.Kokoro;
 
 namespace APurpleApple.Shipyard;
 
@@ -135,7 +136,7 @@ public sealed class PMod : SimpleMod
 
                 if (kokoroApi != null)
                 {
-                    kokoroApi.RegisterEvadeHook(new SquadronKokoroEvadeHook(), double.PositiveInfinity);
+                    kokoroApi.V2.EvadeHook.RegisterHook(new SquadronKokoroEvadeHook(), double.PositiveInfinity);
                 }
 
                 PatchAfterDB();

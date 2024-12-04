@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Shockah.Kokoro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,7 +61,14 @@ namespace APurpleApple.Shipyard.Squadron
         //[HarmonyPatch(typeof(Combat), nameof(Combat.RenderMoveButtons)), HarmonyPrefix]
         public static bool HideMoveButtons(G g)
         {
-            return g.state.ship.key != PMod.ships["Squadron"].UniqueName;
+            if (PMod.kokoroApi == null)
+            {
+                return g.state.ship.key != PMod.ships["Squadron"].UniqueName;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         //[HarmonyPatch(typeof(Combat), nameof(Combat.RenderMoveButtons)), HarmonyPostfix]
@@ -106,34 +114,76 @@ namespace APurpleApple.Shipyard.Squadron
                 j++;
 
 
-                if ((i != 0 || g.state.ship.parts.Count < 20) && (PMod.kokoroApi == null || PMod.kokoroApi.IsEvadePossible(g.state, c, 1, ExternalAPIs.EvadeHookContext.Rendering)))
+                if ((i != 0 || g.state.ship.parts.Count < 20))
                 {
-                    UIKey uIKey = new UIKey(SUK.btn_move_left, j);
-                    Rect rect = new Rect(x - 4, 111.0 + yOffset , 8.0, 11.0);
-                    UIKey key = uIKey;
-                    OnMouseDown onMouseDown = c ;
-                    bool showAsPressed = !c.eyeballPeek && Input.GetGpHeld(Btn.TriggerL);
-                    SharedArt.ButtonResult buttonResult = SharedArt.ButtonSprite(g, rect, key, PMod.sprites[PSpr.UI_squadron_move_right].Sprite, PMod.sprites[PSpr.UI_squadron_move_right_on].Sprite, null, null, inactive: false, flipX: true, flipY: false, onMouseDown, autoFocus: false, noHover: false, showAsPressed, gamepadUntargetable: true);
-                    if (buttonResult.isHover)
+                    if (PMod.kokoroApi == null)
                     {
-                        c.isHoveringMove = 2;
+                        UIKey uIKey = new UIKey(SUK.btn_move_left, j);
+                        Rect rect = new Rect(x - 4, 111.0 + yOffset, 8.0, 11.0);
+                        UIKey key = uIKey;
+                        OnMouseDown onMouseDown = c;
+                        bool showAsPressed = !c.eyeballPeek && Input.GetGpHeld(Btn.TriggerL);
+                        SharedArt.ButtonResult buttonResult = SharedArt.ButtonSprite(g, rect, key, PMod.sprites[PSpr.UI_squadron_move_right].Sprite, PMod.sprites[PSpr.UI_squadron_move_right_on].Sprite, null, null, inactive: false, flipX: true, flipY: false, onMouseDown, autoFocus: false, noHover: false, showAsPressed, gamepadUntargetable: true);
+                        if (buttonResult.isHover)
+                        {
+                            c.isHoveringMove = 2;
+                        }
+                        Draw.Sprite(buttonResult.isHover ? PMod.sprites[PSpr.UI_squadron_move_right_color_on].Sprite : PMod.sprites[PSpr.UI_squadron_move_right_color].Sprite, rect.x + 4, rect.y + 26, flipX: true, color: color);
                     }
-                    Draw.Sprite(buttonResult.isHover ? PMod.sprites[PSpr.UI_squadron_move_right_color_on].Sprite : PMod.sprites[PSpr.UI_squadron_move_right_color].Sprite, rect.x + 4, rect.y + 26, flipX: true, color: color);
+                    else
+                    {
+                        IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? entry = PMod.kokoroApi.V2.EvadeHook.GetNextAction(g.state, c, IKokoroApi.IV2.IEvadeHookApi.Direction.Left);
+                        if (entry != null)
+                        {
+                            UIKey uIKey = new UIKey(SUK.btn_move_left, j);
+                            Rect rect = new Rect(x - 4, 111.0 + yOffset, 8.0, 11.0);
+                            UIKey key = uIKey;
+                            OnMouseDown onMouseDown = c;
+                            bool showAsPressed = !c.eyeballPeek && Input.GetGpHeld(Btn.TriggerL);
+                            SharedArt.ButtonResult buttonResult = SharedArt.ButtonSprite(g, rect, key, PMod.sprites[PSpr.UI_squadron_move_right].Sprite, PMod.sprites[PSpr.UI_squadron_move_right_on].Sprite, null, null, inactive: false, flipX: true, flipY: false, onMouseDown, autoFocus: false, noHover: false, showAsPressed, gamepadUntargetable: true);
+                            if (buttonResult.isHover)
+                            {
+                                c.isHoveringMove = 2;
+                            }
+                            Draw.Sprite(buttonResult.isHover ? PMod.sprites[PSpr.UI_squadron_move_right_color_on].Sprite : PMod.sprites[PSpr.UI_squadron_move_right_color].Sprite, rect.x + 4, rect.y + 26, flipX: true, color: color);
+                        }
+                    }
                 }
 
-                if (i != 19 && (PMod.kokoroApi == null || PMod.kokoroApi.IsEvadePossible(g.state, c, 1, ExternalAPIs.EvadeHookContext.Rendering)))
+                if (i != 19)
                 {
-                    UIKey uIKey = new UIKey(SUK.btn_move_right, j);
-                    Rect rect = new Rect(x + 11, 111.0 + yOffset, 8.0, 11.0);
-                    UIKey key = uIKey;
-                    OnMouseDown onMouseDown = c;
-                    bool showAsPressed = !c.eyeballPeek && Input.GetGpHeld(Btn.TriggerR);
-                    SharedArt.ButtonResult buttonResult2 = SharedArt.ButtonSprite(g, rect, key, PMod.sprites[PSpr.UI_squadron_move_right].Sprite, PMod.sprites[PSpr.UI_squadron_move_right_on].Sprite, null, null, inactive: false, flipX: false, flipY: false, onMouseDown, autoFocus: false, noHover: false, showAsPressed, gamepadUntargetable: true);
-                    if (buttonResult2.isHover)
+                    if (PMod.kokoroApi == null)
                     {
-                        c.isHoveringMove = 2;
+                        UIKey uIKey = new UIKey(SUK.btn_move_right, j);
+                        Rect rect = new Rect(x + 11, 111.0 + yOffset, 8.0, 11.0);
+                        UIKey key = uIKey;
+                        OnMouseDown onMouseDown = c;
+                        bool showAsPressed = !c.eyeballPeek && Input.GetGpHeld(Btn.TriggerR);
+                        SharedArt.ButtonResult buttonResult2 = SharedArt.ButtonSprite(g, rect, key, PMod.sprites[PSpr.UI_squadron_move_right].Sprite, PMod.sprites[PSpr.UI_squadron_move_right_on].Sprite, null, null, inactive: false, flipX: false, flipY: false, onMouseDown, autoFocus: false, noHover: false, showAsPressed, gamepadUntargetable: true);
+                        if (buttonResult2.isHover)
+                        {
+                            c.isHoveringMove = 2;
+                        }
+                        Draw.Sprite(buttonResult2.isHover ? PMod.sprites[PSpr.UI_squadron_move_right_color_on].Sprite : PMod.sprites[PSpr.UI_squadron_move_right_color].Sprite, rect.x + 5, rect.y + 26, flipX: false, color: color);
                     }
-                    Draw.Sprite(buttonResult2.isHover ? PMod.sprites[PSpr.UI_squadron_move_right_color_on].Sprite : PMod.sprites[PSpr.UI_squadron_move_right_color].Sprite, rect.x + 5, rect.y + 26, flipX: false, color: color);
+                    else
+                    {
+                        IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? entry = PMod.kokoroApi.V2.EvadeHook.GetNextAction(g.state, c, IKokoroApi.IV2.IEvadeHookApi.Direction.Right);
+                        if (entry != null)
+                        {
+                            UIKey uIKey = new UIKey(SUK.btn_move_right, j);
+                            Rect rect = new Rect(x + 11, 111.0 + yOffset, 8.0, 11.0);
+                            UIKey key = uIKey;
+                            OnMouseDown onMouseDown = c;
+                            bool showAsPressed = !c.eyeballPeek && Input.GetGpHeld(Btn.TriggerR);
+                            SharedArt.ButtonResult buttonResult2 = SharedArt.ButtonSprite(g, rect, key, PMod.sprites[PSpr.UI_squadron_move_right].Sprite, PMod.sprites[PSpr.UI_squadron_move_right_on].Sprite, null, null, inactive: false, flipX: false, flipY: false, onMouseDown, autoFocus: false, noHover: false, showAsPressed, gamepadUntargetable: true);
+                            if (buttonResult2.isHover)
+                            {
+                                c.isHoveringMove = 2;
+                            }
+                            Draw.Sprite(buttonResult2.isHover ? PMod.sprites[PSpr.UI_squadron_move_right_color_on].Sprite : PMod.sprites[PSpr.UI_squadron_move_right_color].Sprite, rect.x + 5, rect.y + 26, flipX: false, color: color);
+                        }
+                    }
                 }
             }
         }
