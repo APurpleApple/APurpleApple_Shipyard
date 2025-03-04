@@ -104,8 +104,12 @@ namespace APurpleApple.Shipyard.IronExpress
         }
 
         //[HarmonyPatch(typeof(Card), nameof(Card.GetDataWithOverrides)), HarmonyPostfix]
-        public static void ModifyMiddleCardCost(Card __instance, State __0, ref CardData __result)
+        public static void ModifyMiddleCardCost(Card __instance, State __0, ref CardData __result, bool __runOriginal)
         {
+            // if the original didn't run, then it's likely another mod didn't want any expensive code to run (e.g. Nickel card codex caching)
+            if (!__runOriginal)
+                return;
+            
             State s = __0;
             if (s.route is Combat c)
             {
