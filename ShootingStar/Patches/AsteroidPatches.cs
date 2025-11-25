@@ -42,7 +42,7 @@ namespace APurpleApple.Shipyard.ShootingStar
         //[HarmonyPatch(typeof(AStatus), nameof(AStatus.Begin)), HarmonyPrefix]
         public static void StopShieldPrefix(AStatus __instance, G __0, State __1, Combat __2)
         {
-            if (__instance.status == SStatus.shield || __instance.status == SStatus.tempShield && __instance.targetPlayer == true)
+            if ((__instance.status == SStatus.shield || __instance.status == SStatus.tempShield) && __instance.targetPlayer == true)
             {
                 if (!CanShield(__1))
                 {
