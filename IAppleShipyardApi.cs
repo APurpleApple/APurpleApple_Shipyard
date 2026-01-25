@@ -14,6 +14,7 @@ public interface IAppleShipyardApi
     // "ouranos"
     // "ironExpress"
     void RegisterActionLooksForPartType(Type actionType, PType partType);
+    PType? GetPartTypeForActionType(Type actionType);
     void DisableArtifactForShip(string ship, Type artifactType);
     void DisableEventForShip(string ship, string eventKey);
 }

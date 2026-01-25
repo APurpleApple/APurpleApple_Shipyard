@@ -21,7 +21,7 @@ namespace APurpleApple.Shipyard.ExternalAPIs
                     j++;
                     if (j == MG.inst.g.hoverKey.Value.v)
                     {
-                        SquadronPatches.SetLeader(args.State, unit.pilot);
+                        SquadronPatches.SetLeader(args.State, unit);
                     }
                 }
             }

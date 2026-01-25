@@ -1,9 +1,15 @@
-﻿using HarmonyLib;
+﻿using APurpleApple.Shipyard.Squadron.CardActions;
+using FMOD;
+using FSPRO;
+using HarmonyLib;
+using Nanoray.Shrike;
+using Nanoray.Shrike.Harmony;
 using Shockah.Kokoro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using static SharedArt;
@@ -13,26 +19,42 @@ namespace APurpleApple.Shipyard.Squadron
     [HarmonyPatch]
     internal static class SquadronPatches
     {
-        public static Deck? GetLeader(State s)
-        {
-            ArtifactSquadron? artifact = s.EnumerateAllArtifacts().Find((a) => a is ArtifactSquadron) as ArtifactSquadron;
+        //public static Deck? GetLeader(State s)
+        //{
+        //    PartSquadronUnit? leader = s.ship.parts.Find(p => p is PartSquadronUnit ps && ps.isLeader) as PartSquadronUnit;
+        //    return leader?.pilot;
+        //}
 
-            return artifact == null ? null : artifact.leader;
+        public static void SetLeader(State s, PartSquadronUnit part)
+        {
+            PartSquadronUnit? leaderPart = s.ship.parts.Find(p => p is PartSquadronUnit ps && ps.isLeader) as PartSquadronUnit;
+            if (leaderPart != null) leaderPart.isLeader = false;
+            part.isLeader = true;
         }
 
         public static void SetLeader(State s, Deck? leader)
         {
-            ArtifactSquadron? artifact = s.EnumerateAllArtifacts().Find((a) => a is ArtifactSquadron) as ArtifactSquadron;
+            PartSquadronUnit? leaderPart = s.ship.parts.Find(p => p is PartSquadronUnit ps && ps.isLeader) as PartSquadronUnit;
+            if (leaderPart != null) leaderPart.isLeader = false;
 
-            if (artifact == null) return;
-
-            artifact.leader = leader;
+            foreach (var part in s.ship.parts)
+            {
+                if (part is PartSquadronUnit pu)
+                {
+                    if (pu.pilot == leader)
+                    {
+                        pu.isLeader = true;
+                        return;
+                    }
+                }
+            }
         }
 
         public static void RefreshPilots(State s, IEnumerable<Deck> characters)
         {
             foreach (PartSquadronUnit part in s.ship.parts.Where((p) => p is PartSquadronUnit))
             {
+                SetLeader(s, part);
                 part.pilot = null;
             }
 
@@ -222,7 +244,7 @@ namespace APurpleApple.Shipyard.Squadron
 
                     if (j == g.hoverKey.Value.v)
                     {
-                        SetLeader(g.state, unit.pilot);
+                        SetLeader(g.state, unit);
                     }
                 }
             }
@@ -242,7 +264,7 @@ namespace APurpleApple.Shipyard.Squadron
 
                     if (hitPart != null)
                     {
-                        SetLeader(MG.inst.g.state, hitPart.pilot);
+                        SetLeader(MG.inst.g.state, hitPart);
 
                         c.QueueImmediate(new List<CardAction>
                         {
@@ -267,7 +289,7 @@ namespace APurpleApple.Shipyard.Squadron
 
                     if (hitPart != null)
                     {
-                        SetLeader(MG.inst.g.state, hitPart.pilot);
+                        SetLeader(MG.inst.g.state, hitPart);
 
                         c.QueueImmediate(new List<CardAction>
                         {
@@ -288,6 +310,153 @@ namespace APurpleApple.Shipyard.Squadron
             return true;
         }
 
+        public static bool FixForcefields(Combat c, Ship ship)
+        {
+            if (ship.key != PMod.ships["Squadron"].UniqueName) return true;
+
+            string text = "forcefieldMovedEnemy";
+            int? leftForcefield = c.leftForcefield;
+            if (leftForcefield.HasValue)
+            {
+                int valueOrDefault = leftForcefield.GetValueOrDefault();
+                if (ship.x < valueOrDefault)
+                {
+                    c.Queue(new APushSquadronParts
+                    {
+                        wallX = valueOrDefault,
+                        pushLeft = false,
+                        dialogueSelector = text
+                    });
+                }
+            }
+
+            leftForcefield = c.rightForcefield;
+            if (leftForcefield.HasValue)
+            {
+                int valueOrDefault2 = leftForcefield.GetValueOrDefault();
+                if (ship.x + ship.parts.Count > valueOrDefault2)
+                {
+                    c.Queue(new APushSquadronParts
+                    {
+                        wallX = valueOrDefault2,
+                        pushLeft = true,
+                        dialogueSelector = text
+                    });
+                }
+            }
+
+            return false;
+        }
+
+        public static bool IsShipSquadron(Ship s)
+        {
+            return s.key == PMod.ships["Squadron"].UniqueName;
+        }
+
+        public static IEnumerable<CodeInstruction> SquadronMovementTranspiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator, MethodBase originalMethod)
+        {
+            return new SequenceBlockMatcher<CodeInstruction>(instructions)
+                .Find(
+                ILMatches.Ldloc(1),
+                ILMatches.Instruction(OpCodes.Dup),
+                ILMatches.Ldfld(typeof(Ship).GetField(nameof(Ship.x))!),
+                ILMatches.Ldarg(0),
+                ILMatches.Ldfld(typeof(AMove).GetField(nameof(AMove.dir))!),
+                ILMatches.Instruction(OpCodes.Add),
+                ILMatches.Stfld(typeof(Ship).GetField(nameof(Ship.x))!).Anchor(out var anchor)
+                )
+                .Find(
+                ILMatches.Ldarg(0).CreateLabel(generator, out var branchContinue),
+                ILMatches.Ldfld(typeof(AMove).GetField(nameof(AMove.isTeleport))!),
+                ILMatches.AnyBranch,
+                ILMatches.Ldloc(1),
+                ILMatches.Ldloc(1)
+                )
+                .Anchors()
+                .PointerMatcher(anchor)
+                .Insert(SequenceMatcherPastBoundsDirection.After,
+                SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+                [
+                    new CodeInstruction(OpCodes.Ldarg_0),
+                    new CodeInstruction(OpCodes.Ldarg_1),
+                    new CodeInstruction(OpCodes.Ldarg_2),
+                    new CodeInstruction(OpCodes.Ldarg_3),
+                    new CodeInstruction(OpCodes.Call, typeof(SquadronPatches).GetMethod(nameof(AMoveBeginTranspilerLogic))),
+                    new CodeInstruction(OpCodes.Brtrue, branchContinue),
+                    ])
+                .AllElements();
+        }
+
+        public static bool AMoveBeginTranspilerLogic(AMove action, G g, State s, Combat c)
+        {
+            if (!action.targetPlayer || !IsShipSquadron(s.ship)) return false;
+            s.ship.x -= action.dir;
+
+            return true;
+        }
+
+        //[HarmonyPatch(typeof(AMove), nameof(AMove.Begin)), HarmonyPrefix]
+        public static void FixWallInteractions(AMove __instance, G g, State s, Combat c)
+        {
+            if (!__instance.targetPlayer) return;
+            if (s.ship.key != PMod.ships["Squadron"].UniqueName) return;
+
+            int movingPartX = s.ship.parts.FindIndex(p => p is PartSquadronUnit pu && pu.isLeader);
+            Part? part = s.ship.parts.Find(p => p is PartSquadronUnit pu && pu.isLeader);
+            int impactPoint = 0;
+            int dir = 0;
+
+            bool hitWall = false;
+            if (c.rightWall != null)
+            {
+                if (__instance.dir + s.ship.x + movingPartX+1 > c.rightWall)
+                {
+                    __instance.dir = c.rightWall.Value - (s.ship.x + movingPartX+1);
+                    hitWall = true;
+                    impactPoint = c.rightWall.Value-1;
+                    dir = -1;
+                }
+            }
+
+            if (c.leftWall != null)
+            {
+                if (__instance.dir + s.ship.x + movingPartX < c.leftWall)
+                {
+                    __instance.dir = c.leftWall.Value - (s.ship.x + movingPartX);
+                    hitWall = true;
+                    impactPoint = c.leftWall.Value;
+                    dir = 1;
+                }
+            }
+
+            if (hitWall)
+            {
+                if (c.wallDamage != null)
+                {
+                    DamageDone damageDone = s.ship.NormalDamage(s, c, c.wallDamage.Value, impactPoint);
+                    GUID value = Event.Hits_HitHurt;
+                    if (damageDone.hitShield)
+                    {
+                        value = Event.Hits_ShieldHit;
+                    }
+
+                    if (damageDone.poppedShield)
+                    {
+                        value = Event.Hits_ShieldPop;
+                    }
+
+                    if (damageDone.hitHull)
+                    {
+                        value = Event.Hits_HitHurt;
+                    }
+
+                    Audio.Play(value);
+                    ParticleBursts.WallImpact(g, FxPositions.WallImpact(impactPoint, __instance.targetPlayer) + new Vec(dir * 8), (damageDone.hitShield || damageDone.poppedShield) && damageDone.hullAmt == 0, -dir);
+                }
+            }
+
+        }
+
         //[HarmonyPatch(typeof(AMove), nameof(AMove.Begin)), HarmonyPostfix]
         public static void ReplaceMovement(AMove __instance, G g, State s, Combat c)
         {
@@ -295,9 +464,6 @@ namespace APurpleApple.Shipyard.Squadron
             if (s.ship.key != PMod.ships["Squadron"].UniqueName) return;
             int j = 0;
             Ship ship = g.state.ship;
-            ArtifactSquadron? art = s.EnumerateAllArtifacts().Find((x) => x is ArtifactSquadron) as ArtifactSquadron;
-            if (art == null) return;
-            s.ship.x -= __instance.dir;
             if (__instance.isTeleport)
             {
                 s.ship.xLerped -= __instance.dir;
@@ -308,7 +474,7 @@ namespace APurpleApple.Shipyard.Squadron
                 if (s.ship.parts[i] is not PartSquadronUnit unit) continue;
                 j++;
 
-                if (unit.pilot == art.leader)
+                if (unit.isLeader)
                 {
                     int targetIndex = i + __instance.dir;
 
@@ -419,7 +585,6 @@ namespace APurpleApple.Shipyard.Squadron
             if (__0.state.ship.key != PMod.ships["Squadron"].UniqueName) return;
             if (__1.route is Combat c)
             {
-                Deck? leader = GetLeader(__0.state);
                 List<CardAction> actionsOverridden = __instance.GetActionsOverridden(__1, (__1.route as Combat) ?? DB.fakeCombat);
                 foreach (CardAction action in actionsOverridden)
                 {
@@ -456,7 +621,7 @@ namespace APurpleApple.Shipyard.Squadron
                         {
                             foreach (Part part in __1.ship.parts)
                             {
-                                if (part is PartSquadronUnit unit && unit.pilot == leader)
+                                if (part is PartSquadronUnit unit && unit.isLeader)
                                 {
                                     unit.hilight = true;
                                     break;
@@ -478,7 +643,6 @@ namespace APurpleApple.Shipyard.Squadron
             Type t = __instance.GetType();
             PType? pType = null;
 
-
             for (int i = SquadronEntry.cardActionLooksForType.Count-1; i >= 0 ; i--)
             {
                 if (SquadronEntry.cardActionLooksForType[i].Item1 == t)
@@ -494,12 +658,11 @@ namespace APurpleApple.Shipyard.Squadron
 
             if (pType != null)
             {
-                Deck? leader = GetLeader(s);
                 foreach (Part part in s.ship.parts)
                 {
                     if (part is PartSquadronUnit unit)
                     {
-                        unit.type = unit.pilot == leader ? pType.Value : PType.special;
+                        unit.type = unit.isLeader ? pType.Value : PType.special;
                     }
                 }
             }

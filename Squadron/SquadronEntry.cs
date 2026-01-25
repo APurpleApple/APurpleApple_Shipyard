@@ -85,7 +85,13 @@ namespace APurpleApple.Shipyard.Squadron
             );
 
             harmony.Patch(typeof(AMove).GetMethod(nameof(AMove.Begin)),
-                postfix: typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.ReplaceMovement))
+                postfix: typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.ReplaceMovement)),
+                prefix: typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.FixWallInteractions)),
+                transpiler: typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.SquadronMovementTranspiler))
+            );
+
+            harmony.Patch(typeof(AEnvironmentTurn).GetMethod(nameof(AEnvironmentTurn.ApplyForcefield)),
+                prefix: typeof(SquadronPatches).GetMethod(nameof(SquadronPatches.FixForcefields))
             );
 
             harmony.Patch(typeof(AAttack).GetMethod(nameof(AAttack.ApplyAutododge)),

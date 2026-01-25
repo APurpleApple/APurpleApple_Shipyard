@@ -10,7 +10,7 @@ namespace APurpleApple.Shipyard.Squadron
 {
     internal class ArtifactSquadron : Artifact, IModArtifact
     {
-        public Deck? leader = null;
+        //public Deck? leader = null;
 
         public static void Register(IModHelper helper)
         {
@@ -72,7 +72,7 @@ namespace APurpleApple.Shipyard.Squadron
             if (part == null) return;
             if (part is not PartSquadronUnit unit) return;
             if (!unit.pilot.HasValue) return;
-            SquadronPatches.SetLeader(state, unit.pilot);
+            SquadronPatches.SetLeader(state, unit);
 
             Status missingStatus;
             if (!StatusMeta.deckToMissingStatus.TryGetValue(unit.pilot.Value, out missingStatus)) return;
@@ -81,7 +81,7 @@ namespace APurpleApple.Shipyard.Squadron
             combat.Queue(new AStatus() { status= missingStatus, statusAmount = 1, targetPlayer = true });
         }
 
-        
+
         public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
         {
             foreach (Part part in state.ship.parts)
@@ -90,7 +90,7 @@ namespace APurpleApple.Shipyard.Squadron
                 {
                     if (unit.pilot == deck)
                     {
-                        leader = deck;
+                        SquadronPatches.SetLeader(state, deck);
                         break;
                     }
                 }

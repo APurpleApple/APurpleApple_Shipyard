@@ -11,6 +11,7 @@ namespace APurpleApple.Shipyard.Squadron
     public class PartSquadronUnit : Part, ICustomPart
     {
         public Deck? pilot = null;
+        public bool isLeader = false;
         public double yLerped = 0;
         public bool IsTemporary { get; set; } = false;
         public void Render(Ship ship, int localX, G g, Vec v, Vec worldPos)
@@ -42,7 +43,7 @@ namespace APurpleApple.Shipyard.Squadron
             }
 
             yLerped = Mutil.MoveTowards(yLerped, yOffset, g.dt * Math.Abs(yLerped - yOffset) * 5);
-            xLerped = Mutil.MoveTowards(xLerped ?? ((double)localX), localX, g.dt * Math.Max(Math.Abs((xLerped ?? (double)localX) - localX) - 1, 0) * 10);
+            //xLerped = Mutil.MoveTowards(xLerped ?? ((double)localX), localX, g.dt * Math.Max(Math.Abs((xLerped ?? (double)localX) - localX) - 1, 0) * 10);
             j++;
 
             Vec partPos = worldPos + new Vec((xLerped ?? ((double)localX)) * 16.0, yLerped + -32.0 + (ship.isPlayerShip ? offset.y : (1.0 + (0.0 - offset.y))));
@@ -61,20 +62,20 @@ namespace APurpleApple.Shipyard.Squadron
 
         public void RenderUI(Ship ship, G g, Combat? combat, int localX, string keyPrefix, bool isPreview, Vec v) 
         {
+            Vec partPos = v;
+            partPos += new Vec(-5.0, 1.0);
+
             if (pilot.HasValue)
             {
-                Vec partPos = v;
-                partPos += new Vec(-5.0, 1.0);
-
                 if (g.state.route is Combat c)
                 {
                     Draw.Text(Character.GetDisplayName(pilot.Value, g.state), partPos.x + 13, partPos.y + 10, color: DB.decks[pilot.Value].color, outline: Colors.black, align: daisyowl.text.TAlign.Center);
                 }
+            }
 
-                if (pilot == SquadronPatches.GetLeader(g.state))
-                {
-                    Draw.Sprite(PMod.sprites[PSpr.Icons_crown].Sprite, partPos.x, partPos.y, color: Colors.white.fadeAlpha(Math.Abs(Math.Sin(g.time * 2))));
-                }
+            if (isLeader)
+            {
+                Draw.Sprite(PMod.sprites[PSpr.Icons_crown].Sprite, partPos.x, partPos.y, color: Colors.white.fadeAlpha(Math.Abs(Math.Sin(g.time * 2))));
             }
             
         }

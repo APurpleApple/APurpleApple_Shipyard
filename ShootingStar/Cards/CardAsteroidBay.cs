@@ -37,7 +37,11 @@ namespace APurpleApple.Shipyard.ShootingStar
             }
             actions.Add(new ASpawn() { thing = new Asteroid(), disabled = flipped });
             actions.Add(new ADummyAction());
-            actions.Add(new AAsteroidEjectPart() {disabled = !flipped, partKey = "AsteroidMissile", far = upgrade == Upgrade.A });
+            actions.Add(new AAsteroidEjectPart() {disabled = !flipped, partKey = "AsteroidMissile"});
+            if (upgrade == Upgrade.B)
+            {
+                actions.Add(new ADrawCard() { disabled = !flipped, count = 1 });
+            }
 
             return actions;
         }
@@ -46,20 +50,12 @@ namespace APurpleApple.Shipyard.ShootingStar
         {
             CardData data = new CardData();
             data.floppable = true;
-
+            data.art = flipped ? SSpr.cards_Adaptability_Bottom : SSpr.cards_Adaptability_Top;
             data.cost = 1;
-           
-            switch (upgrade)
+
+            if (upgrade == Upgrade.A)
             {
-                case Upgrade.None:
-                    data.art = flipped ? SSpr.cards_Adaptability_Bottom : SSpr.cards_Adaptability_Top;
-                    break;
-                case Upgrade.A:
-                    data.art = flipped ? SSpr.cards_Adaptability_Bottom : SSpr.cards_Adaptability_Top;
-                    break;
-                case Upgrade.B:
-                    data.art = flipped ? SSpr.cards_MiningDrill_Bottom : SSpr.cards_MiningDrill_Top;
-                    break;
+                data.cost = 0;
             }
             
             return data;

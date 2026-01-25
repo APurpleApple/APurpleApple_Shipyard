@@ -119,7 +119,10 @@ namespace APurpleApple.Shipyard.IronExpress
                         PartRailCannon? cannon = s.ship.parts.Find((x) => x is PartRailCannon) as PartRailCannon;
                         if (cannon != null && !cannon.isCannon)
                         {
-                            __result.cost -= 1;
+                            if (__result.cost > 0)
+                            {
+                                __result.cost -= 1;
+                            }
                         }
                     }
                 }

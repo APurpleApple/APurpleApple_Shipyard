@@ -117,7 +117,7 @@ namespace APurpleApple.Shipyard.ShootingStar
                         {
                             type = PType.wing,
                             skin = PMod.parts["Asteroid_Engine"].UniqueName,
-                            damageModifier = PDamMod.weak,
+                            damageModifier = PDamMod.none,
                             key = "AsteroidEngine",
                         },
                         new Part()

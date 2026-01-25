@@ -53,6 +53,8 @@ public enum PSpr
 [SpritePath("Ouranos/Sprites/Parts/ouranos_cockpit.png")] Parts_ouranos_cockpit,
 [SpritePath("Ouranos/Sprites/Parts/ouranos_generator.png")] Parts_ouranos_generator,
 [SpritePath("Ouranos/Sprites/Parts/ouranos_missile.png")] Parts_ouranos_missile,
+[SpritePath("ShootingStar/Sprites/Cards/flipBottom.png")] Cards_flipBottom,
+[SpritePath("ShootingStar/Sprites/Cards/flipTop.png")] Cards_flipTop,
 [SpritePath("ShootingStar/Sprites/Artifacts/AsteroidArtifact.png")] Artifacts_AsteroidArtifact,
 [SpritePath("ShootingStar/Sprites/Artifacts/AsteroidDrawMissing.png")] Artifacts_AsteroidDrawMissing,
 [SpritePath("ShootingStar/Sprites/Artifacts/AsteroidRetain.png")] Artifacts_AsteroidRetain,

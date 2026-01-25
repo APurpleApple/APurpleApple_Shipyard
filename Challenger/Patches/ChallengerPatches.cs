@@ -77,8 +77,20 @@ namespace APurpleApple.Shipyard.Challenger
         //PatchVirtual [HarmonyPatch(typeof(AAttack), nameof(AAttack.Begin)), HarmonyPrefix]
         public static void AAttackBegin_Prefixes(G g, State s, Combat c, AAttack __instance)
         {
+            if (s.ship.key != PMod.ships["Challenger"].UniqueName) return;
+            if (__instance.targetPlayer) return;
+            if (__instance.fromDroneX.HasValue) return;
+
             AddAttackMovement(g, s, c, __instance);
-            ChampionBelt(s, c, __instance);
+
+            if (s.EnumerateAllArtifacts().Any((x) => x is ArtifactChallengerChampion))
+            {
+                FlexibleJointTargeting(s, c, __instance);
+            }
+            else
+            {
+                FistAnimTargeting(s, c, __instance);
+            }
         }
 
         public static void AddAttackMovement(G g, State s, Combat c, AAttack __instance)
@@ -89,15 +101,25 @@ namespace APurpleApple.Shipyard.Challenger
             if (part == null) return;
             if (part is PartChallengerFist)
             {
-                __instance.moveEnemy = part.flip ? -1 : 1;
+                __instance.moveEnemy += part.flip ? -1 : 1;
             }
         }
 
-        public static void ChampionBelt(State __1, Combat __2, AAttack __instance)
+        public static void FistAnimTargeting(State __1, Combat __2, AAttack __instance)
         {
-            if (__1.ship.key != PMod.ships["Challenger"].UniqueName) return;
-            if (__instance.targetPlayer) return;
-            if (__instance.fromDroneX.HasValue) return;
+            int? x = __instance.GetFromX(__1, __2);
+            if (!x.HasValue) return;
+            Part? cannon = __1.ship.GetPartAtLocalX(x.Value);
+            if (cannon == null) return;
+            if (cannon is not PartChallengerFist fist) return;
+
+            RaycastResult raycastResult = CombatUtils.RaycastFromShipLocal(__1, __2, x.Value, __instance.targetPlayer);
+            fist.xTarget = raycastResult.worldX;
+            fist.yTarget = (int)(raycastResult.hitDrone ? FxPositions.Drone(0).y : (raycastResult.hitShip ? FxPositions.Hull(0, false).y : 0));
+        }
+
+        public static void FlexibleJointTargeting(State __1, Combat __2, AAttack __instance)
+        {
             int? x = __instance.GetFromX(__1, __2);
             if (!x.HasValue) return;
             Part? cannon = __1.ship.GetPartAtLocalX(x.Value);
@@ -108,19 +130,40 @@ namespace APurpleApple.Shipyard.Challenger
             fist.xTarget = raycastResult.worldX;
             fist.yTarget = (int)(raycastResult.hitDrone ? FxPositions.Drone(0).y : (raycastResult.hitShip ? FxPositions.Hull(0, false).y : 0));
 
-            if (!__1.EnumerateAllArtifacts().Any((x) => x is ArtifactChallengerChampion)) return;
-
+            int worldX = __1.ship.x + x.Value;
+            bool isLeftOfEnemy = worldX < __2.otherShip.x + __2.otherShip.parts.Count / 2;
+            Console.WriteLine("Side: " +(isLeftOfEnemy ? "left" : "right"));
+            Console.WriteLine("Offset: " + (__2.otherShip.x + __2.otherShip.parts.Count / 2 - worldX));
             if (!raycastResult.hitShip && !raycastResult.hitDrone)
             {
-                for (int i = -1; i <= 1; i += 2) 
+                if (isLeftOfEnemy)
                 {
-                    if (CombatUtils.RaycastGlobal(__2, __2.otherShip, fromDrone: true, raycastResult.worldX + i).hitShip)
+                    for (int i = 1; i >= -1; i -= 2)
                     {
-                        __instance.fromX = x + i;
-                        fist.pulse = 1.0;
-                        fist.xTarget = raycastResult.worldX + i;
-                        fist.yTarget = (int)FxPositions.Hull(0, false).y;
-                        break;
+                        RaycastResult rc = CombatUtils.RaycastGlobal(__2, __2.otherShip, fromDrone: false, raycastResult.worldX + i);
+                        if (rc.hitShip || rc.hitDrone)
+                        {
+                            __instance.fromX = x + i;
+                            fist.pulse = 1.0;
+                            fist.xTarget = raycastResult.worldX + i;
+                            fist.yTarget = rc.hitDrone ? (int)FxPositions.Drone(0).y : (int)FxPositions.Hull(0, false).y;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = -1; i <= 1; i += 2)
+                    {
+                        RaycastResult rc = CombatUtils.RaycastGlobal(__2, __2.otherShip, fromDrone: false, raycastResult.worldX + i);
+                        if (rc.hitShip || rc.hitDrone)
+                        {
+                            __instance.fromX = x + i;
+                            fist.pulse = 1.0;
+                            fist.xTarget = raycastResult.worldX + i;
+                            fist.yTarget = rc.hitDrone ? (int)FxPositions.Drone(0).y : (int)FxPositions.Hull(0, false).y;
+                            break;
+                        }
                     }
                 }
             }

@@ -18,7 +18,7 @@
     },
     "ChampionBelt": {
       "name": "FLEXIBLE JOINTS",
-      "description": "If a fist would miss by 1 space, it hits the next part nearest to the center instead."
+      "description": "If a fist would miss by 1 space, it hits the next part or <c=midrow>object</c> nearest to the center instead."
     },
     "Sweatband": {
       "name": "SWEATBAND",
